@@ -1,8 +1,6 @@
 StoryLine Todo
 --------------------------------------
 
-* Implement support for pages.
-
 * Implement support for delays. Each story should have a possibility to set a delay.
 I.e. 'when completed, wait 10 seconds' or 'wait until element exists'... Etc.
 
