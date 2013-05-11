@@ -39,11 +39,29 @@ Start the guide by triggering it's first page.
 
 ## Documentation
 
+### Guideline
+
+#### Methods
+
+* void setCurrentPage(pageName)
+> Sets the name of the current page. Should be called on each page change.
+
 ### Guide
 
 >A guide is a logical representation of pages and steps.
 
   ```var guide = new Guideline.Guide(name);```
+  
+#### Constructor
+
+Guideline.Guide(name);
+
+>The parameter 'name' is used when determining what page a guide is residing on. I.e. it's important that this value is kept unqiue.
+
+#### Methods
+
+* Page addPage(options)
+> Adds a new page to the guide.
 
 ### Page
 
