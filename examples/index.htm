@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html class="not-ie" lang="en"> <!--<![endif]-->
+	<head>
+		<meta charset="utf-8">
+		<title>StoryLine.js</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link href="css/style.css" rel="stylesheet">
+		<script src="../lib/jquery-1.9.1.min.js"></script>
+		<script src="../lib/lightshow.jquery.min.js"></script>
+		<script src="../lib/scrollto.jquery.js"></script>
+		<script src="../src/guideline.js"></script>
+		<script src="guides.js"></script>
+
+		<script>
+			$(document).ready(function(){
+				Guideline.setCurrentPage("home");
+			});
+		</script>
+	</head>
+	<body>
+		<h1>Index</h1>
+		<div id="container">
+			<input id="create-project" type="button" value="Create project" />
+			<input id="other-stuff" type="button" value="Other stuff" style="top:250px;left:500px;position:absolute;" />
+			<input id="other-stuff-2" type="button" value="Other stuff" style="top:1250px;left:700px;position:absolute;" />
+			<a id="continue-to-page-2" href="other-page.htm">Continue to step 2</a>
+		</div>
+	</body>
+</html>

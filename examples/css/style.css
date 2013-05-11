@@ -1,0 +1,128 @@
+/*Guideline Bubble*/
+
+.gl-bubble {
+	border-radius: 5px;
+	border: 1px solid #c0c0c0;
+	background-color: #fff;
+	padding: 10px;
+	box-shadow: 0px 0px 10px #c0c0c0;
+}
+
+.gl-bubble h2 {
+	font-size: 1em;
+	padding: 0px;
+	margin: 0px;
+}
+
+.gl-bubble .progress-bar {
+	height: 2px;
+	background-color: #c0c0c0;
+}
+
+/*Arrow*/
+.gl-bubble .arrow,
+.gl-bubble .arrow:after {
+	position: absolute;
+	display: block;
+	width: 0;
+	height: 0;
+	border-color: transparent;
+	border-style: solid;
+}
+
+.gl-bubble .arrow {
+	border-width: 11px;
+}
+
+.gl-bubble .arrow:after {
+	border-width: 10px;
+	content: "";
+}
+
+/*Top*/
+
+.gl-bubble.top {
+	margin-top: -15px;
+}
+
+.gl-bubble.top .arrow {
+	bottom: -11px;
+	left: 50%;
+	margin-left: -11px;
+	border-top-color: #999;
+	border-top-color: rgba(0, 0, 0, 0.25);
+	border-bottom-width: 0;
+}
+
+.gl-bubble.top .arrow:after {
+	bottom: 1px;
+	margin-left: -10px;
+	border-top-color: #ffffff;
+	border-bottom-width: 0;
+}
+
+/*Right*/
+
+.gl-bubble.right {
+	margin-left: 15px;
+}
+
+.gl-bubble.right .arrow {
+	top: 50%;
+	left: -11px;
+	margin-top: -11px;
+	border-right-color: #999;
+	border-right-color: rgba(0, 0, 0, 0.25);
+	border-left-width: 0;
+}
+
+.gl-bubble.right .arrow:after {
+	bottom: -10px;
+	left: 1px;
+	border-right-color: #ffffff;
+	border-left-width: 0;
+}
+
+/*Bottom*/
+
+.gl-bubble.bottom {
+	margin-top: 15px;
+}
+
+.gl-bubble.bottom .arrow {
+	top: -11px;
+	left: 50%;
+	margin-left: -11px;
+	border-bottom-color: #999;
+	border-bottom-color: rgba(0, 0, 0, 0.25);
+	border-top-width: 0;
+}
+
+.gl-bubble.bottom .arrow:after {
+	top: 1px;
+	margin-left: -10px;
+	border-bottom-color: #ffffff;
+	border-top-width: 0;
+}
+
+/*Left*/
+
+.gl-bubble.left {
+	margin-right: 15px;
+}
+
+.gl-bubble.left .arrow {
+	top: 50%;
+	right: -11px;
+	margin-top: -11px;
+	border-left-color: #999;
+	border-left-color: rgba(0, 0, 0, 0.25);
+	border-right-width: 0;
+}
+
+.gl-bubble.left .arrow:after {
+	right: 1px;
+	bottom: -10px;
+	border-left-color: #ffffff;
+	border-right-width: 0;
+}
