@@ -7,12 +7,18 @@ Guideline.js is a simple JavaScript library for creating on-site guides/tours!
 
 ### Guide
 
->123
+>A guide is a logical representation of pages and steps.
+
+  ```var guide = new Guideline.Guide(name);```
 
 ### Page
 
->123
+>A page is logical representation of steps.
+
+  ```var page = new Guideline.Page(options);```
 
 ### Step
 
-> 123
+>A step is a logical representation of actions on a page.
+
+  ```var step = new Guideline.Step(options);```
