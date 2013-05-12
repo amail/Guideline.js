@@ -64,15 +64,12 @@ Guideline.Guide(name);
 #### Methods
 
 * Page addPage(options)
-
 > Adds a new page to the guide.
 
 * void begin()
-
 > Begins a new story.
 
 * void restart()
-
 > Restarts a story.
 
 ### Page
@@ -84,11 +81,9 @@ Guideline.Guide(name);
 #### Methods
 
 * Step addStep(options)
-
 > Adds a new step to the page.
 
 * Step[] getSteps()
-
 > Retrieves all steps added to this page.
 
 ### Step
