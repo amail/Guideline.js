@@ -46,6 +46,9 @@ Start the guide by triggering it's first page.
 * void setCurrentPage(pageName)
 > Sets the name of the current page. Should be called on each page change.
 
+* void registerGuide(guide)
+> Registers a guide to retrieve page changes. Automatically done on guide intiailization.
+
 ### Guide
 
 >A guide is a logical representation of pages and steps.
@@ -56,18 +59,37 @@ Start the guide by triggering it's first page.
 
 Guideline.Guide(name);
 
->The parameter 'name' is used when determining what page a guide is residing on. I.e. it's important that this value is kept unqiue.
+> The parameter 'name' is used when determining what page a guide is residing on. I.e. it's important that this value is kept unqiue.
 
 #### Methods
 
 * Page addPage(options)
+
 > Adds a new page to the guide.
+
+* void begin()
+
+> Begins a new story.
+
+* void restart()
+
+> Restarts a story.
 
 ### Page
 
 >A page is logical representation of steps.
 
   ```var page = new Guideline.Page(options);```
+  
+#### Methods
+
+* Step addStep(options)
+
+> Adds a new step to the page.
+
+* Step[] getSteps()
+
+> Retrieves all steps added to this page.
 
 ### Step
 
