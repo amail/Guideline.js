@@ -54,20 +54,13 @@ http://app.amail.io/js/guideline/guides.js
 
 ### Guideline
 
-#### Events
-
-* complete
-> Occurrs when the guide is completed (not being skipped).
-* skip
-> Occurrs when the user activly skips the guide.
-
 #### Methods
-
-* void on(eventName, handler)
-> Subscribe to a specific event.
 
 * void setCurrentPage(pageName)
 > Sets the name of the current page. Should be called on each page change.
+
+* void getGuide(guideName)
+> Retrieves a guide by name. Requires that it has been registered.
 
 * void registerGuide(guide)
 > Registers a guide to retrieve page changes. Automatically done on guide intiailization.
@@ -84,7 +77,18 @@ Guideline.Guide(name);
 
 > The parameter 'name' is used when determining what page a guide is residing on. I.e. it's important that this value is kept unqiue.
 
+#### Events
+
+* complete
+> Occurrs when the guide is completed (not being skipped).
+
+* skip
+> Occurrs when the user activly skips the guide.
+
 #### Methods
+
+* void on(eventName, handler)
+> Subscribe to a specific event.
 
 * Page addPage(options)
 > Adds a new page to the guide.
