@@ -60,7 +60,7 @@ http://app.amail.io/js/guideline/guides.js
 > Sets the name of the current page. Should be called on each page change.
 
 * void getGuide(guideName)
-> Retrieves a guide by name. Requires that it has been registered.
+> Retrieve a guide by name. Requires that it has been registered.
 
 * void registerGuide(guide)
 > Registers a guide to retrieve page changes. Automatically done on guide intiailization.
@@ -73,17 +73,24 @@ http://app.amail.io/js/guideline/guides.js
   
 #### Constructor
 
-Guideline.Guide(name);
+Guideline.Guide(name[, options]);
 
 > The parameter 'name' is used when determining what page a guide is residing on. I.e. it's important that this value is kept unqiue.
+> The parameter 'options' can be used to specify futher settings for this guide.
 
 #### Events
 
-* complete
-> Occurrs when the guide is completed (not being skipped).
+* start
+> Occurrs when the guide starts.
 
 * skip
 > Occurrs when the user activly skips the guide.
+
+* restart
+> Occurrs when the guide is restarted.
+
+* complete
+> Occurrs when the guide ends (without being skipped).
 
 #### Methods
 
@@ -105,7 +112,18 @@ Guideline.Guide(name);
 
   ```var page = new Guideline.Page(options);```
   
+#### Events
+
+* show
+> Occurrs when the step is shown.
+
+* hide
+> Occurrs when the step is hidden.
+  
 #### Methods
+
+* void on(eventName, handler)
+> Subscribe to a specific event.
 
 * Step addStep(options)
 > Adds a new step to the page.
