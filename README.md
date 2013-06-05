@@ -1,47 +1,70 @@
 Guideline.js
 ============
 
-Guideline.js is a simple JavaScript library for creating on-site guides/tours!
+Guideline.js is a non-invasive JavaScript library for creating on-site guides/tours.
 
 ## TLDR;
 
 ### Create a guide
 
-    var guide = new Guideline.Guide("welcome");
-
-    var homePage = guide.addPage("home");
+    var welcomeGuide = new Guideline.Guide("welcome");
+    
+    var homePage = welcomeGuide.addPage("ProjectListCtrl");
     
     homePage.addStep({
-      title: "Click on the 'create' button to create a new project",
-    	content: "hehe this is very veri nice of you",
-    	showAt: "#create-project",
-    	align: "right middle",
-    	continueWhen: "click #create-project",
-    	continueAfter: 5,
-    	showNextStep: false
+        type: "overlay",
+        overlay: {
+            style: {
+                opacity: 0.9
+            }
+        },
+        showContinue: false,
+        content: "<div class='gl-overlay'>" + "<h1>Welcome to AlphaMail!</h1>" + "<p>Let's get familiar with the dashboard by creating <strong>a new project</strong>, <strong>build a template</strong> for it, and then <strong>send a test message</strong>.</p>" + "<button class='btn btn-large btn-primary btn-alpha-blue hide-button'><i class='icon-circle-arrow-right'></i> Get started</button>" + "<br/>" + "<a href='#' class='gl-skip'>or skip this</a>" + "</div>"
     });
     
     homePage.addStep({
-    	title: "Other stuff",
-    	showAt: "#other-stuff",
-    	align: "center bottom",
-    	continueWhen: "click #other-stuff",
-    	continueAfter: 5
+        title: "First, create a new project...",
+        showAt: "#create-new-project",
+        align: "right middle",
+        continueWhen: "click #create-new-project",
+        showContinue: false
     });
 
-    guide.begin();
+    welcomeGuide.register();
     
 ### Trigger a page
 
-Start the guide by triggering it's first page.
+Tell Guideline.js which page you're on.
 
     Guideline.setCurrentPage("home");
+    
+### Start the guide
+
+    Guideline.getGuide("welcome").start();
+
+## Real world example
+
+### AlphaMail (http://app.amail.io/)
+
+Have a look at AlphaMail's welcome guide. It's the same one that runs when you sign in for the first time!
+
+http://app.amail.io/js/guideline/guides.js
 
 ## Documentation
 
 ### Guideline
 
+#### Events
+
+* complete
+> Occurrs when the guide is completed (not being skipped).
+* skip
+> Occurrs when the user activly skips the guide.
+
 #### Methods
+
+* void on(eventName, handler)
+> Subscribe to a specific event.
 
 * void setCurrentPage(pageName)
 > Sets the name of the current page. Should be called on each page change.
@@ -53,7 +76,7 @@ Start the guide by triggering it's first page.
 
 >A guide is a logical representation of pages and steps.
 
-  ```var guide = new Guideline.Guide(name);```
+  ```var guide = new Guideline.Guide(name[, options]);```
   
 #### Constructor
 
