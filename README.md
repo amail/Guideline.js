@@ -59,7 +59,7 @@ http://app.amail.io/js/guideline/guides.js
 * void setCurrentPage(pageName)
 > Sets the name of the current page. Should be called on each page change.
 
-* void getGuide(guideName)
+* Guide getGuide(guideName)
 > Retrieve a guide by name. Requires that it has been registered.
 
 * void registerGuide(guide)
