@@ -311,11 +311,9 @@
 		options = options || {};
 
 		this._pages = [];
-		this._steps = [];
 		this._emitter = new EventEmitter();
 
 		this.setName(name);
-		this.setStarted(false);
 		this.setStartOnUrl(options.startOnUrl);
 		this.setSkipAsDefault(options.skipAsDefault);
 
@@ -405,7 +403,7 @@
 		
 		if(parentStep == null){
 			this._emitter.emit('start', this);
-		}else{
+		}else{	
 			parentStep.hide();
 		}
 
@@ -498,6 +496,12 @@
 	};
 
 	Guide.prototype.notifyPageChange = function(pageName){
+		var parentStep = this.getParentStep();
+		
+		if(parentStep != null){
+			parentStep.hide();
+		}
+
 		var cookieValue = Utility.Cookie.get("guideline_"+this.getName());
 
 		if(cookieValue === null && this._skipAsDefault){
@@ -513,9 +517,6 @@
 		var nextPage = this.getNextPage();
 
 		if(nextPage != null){
-			if(this.getParentStep() == null){
-				//this._emitter.emit('start', this);
-			}
 			if(nextPage.getName() == pageName && (this.getStepOffset() == -1 || this.isLastStepOffset())){
 				this.changeToNextPage();
 			}else if(this.getPageOffset() != -1){
@@ -538,8 +539,15 @@
 	};
 
 	Guide.prototype.start = function(){
+		if(this.getStarted()){
+			return false;
+		}
+
+		this.reset();
+		Utility.Cookie.set("guideline_"+this.getName(), -1);
+
 		// Check whether current page is our start page
-		if(Guideline._currentPage == this.getPage(0).getStep(0).getName()){
+		if(Guideline._currentPage == this.getPage(0).getName()){
 			this.notifyPageChange(Guideline._currentPage);
 		}else if(this.getStartOnUrl() != null){
 			window.location.href = this.getStartOnUrl();
@@ -548,8 +556,6 @@
 
 	Guide.prototype.restart = function(){
 		this._emitter.emit('restart', this);
-
-		console.log("Restarting!");
 		
 		Utility.Cookie.set("guideline_"+this.getName(), -1);
 		this.reset();
@@ -578,6 +584,8 @@
 	};
 
 	Guide.prototype.reset = function(){
+		this._steps = [];
+		this.setStarted(false);
 		this.setParentStep(null);
 		this.setPageOffset(-1);
 		this.setStepOffset(-1);
@@ -611,6 +619,10 @@
 
 		return step;
 	};
+
+	Page.prototype.getStep = function(offset){
+		return offset < this._steps.length ? this._steps[offset] : null;
+	}
 
 	Page.prototype.getSteps = function(){
 		return this._steps;
