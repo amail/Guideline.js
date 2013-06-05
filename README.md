@@ -84,7 +84,7 @@ Guideline.Guide(name[, options]);
 > Occurrs when the guide starts.
 
 * skip
-> Occurrs when the user activly skips the guide.
+> Occurrs when the user skips the guide.
 
 * restart
 > Occurrs when the guide is restarted.
