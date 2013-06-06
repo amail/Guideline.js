@@ -97,7 +97,7 @@ Guideline.Guide(name[, options]);
 * Guide on(eventName, handler)
 > Subscribe to a specific event.
 
-* Page addPage(options)
+* Page addPage(name[, options])
 > Adds a new page to the guide.
 
 * void begin()
