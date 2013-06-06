@@ -1,7 +1,7 @@
 Guideline.js
 ============
 
-A non-invasive JavaScript library for creating on-site guides/tours.
+JavaScript library for creating non-invasive guides/tours.
 
 ## TLDR;
 
