@@ -138,3 +138,12 @@ Guideline.Guide(name[, options]);
 
 * void on(eventName, handler)
 > Subscribe to a specific event.
+
+* void show()
+> Shows a step.
+
+* void hide()
+> Hides a step.
+
+* void changeToNextStep()
+> If connected to a page, change to the next step on that page.
