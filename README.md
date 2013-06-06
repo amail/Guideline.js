@@ -1,7 +1,7 @@
 Guideline.js
 ============
 
-Guideline.js is a non-invasive JavaScript library for creating on-site guides/tours.
+A non-invasive JavaScript library for creating on-site guides/tours.
 
 ## TLDR;
 
@@ -112,18 +112,7 @@ Guideline.Guide(name[, options]);
 
   ```var page = new Guideline.Page(options);```
   
-#### Events
-
-* show
-> Occurrs when the step is shown.
-
-* hide
-> Occurrs when the step is hidden.
-  
 #### Methods
-
-* void on(eventName, handler)
-> Subscribe to a specific event.
 
 * Step addStep(options)
 > Adds a new step to the page.
@@ -136,3 +125,16 @@ Guideline.Guide(name[, options]);
 >A step is a logical representation of actions on a page.
 
   ```var step = new Guideline.Step(options);```
+  
+#### Events
+
+* show
+> Occurrs when the step is shown.
+
+* hide
+> Occurrs when the step is hidden.
+
+#### Methods
+
+* void on(eventName, handler)
+> Subscribe to a specific event.
