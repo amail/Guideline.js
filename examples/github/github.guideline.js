@@ -20,12 +20,12 @@ repositoryPage.addStep({
     }
 });
 
-/*repositoryPage.addStep({
+repositoryPage.addStep({
     title: "This is the repository name. Remember it!",
     showAt: ".js-current-repository",
     align: "right middle",
     continueAfter: 5 // seconds
-});*/
+});
 
 repositoryPage.addStep({
     title: "Click on 'SSH' to show the GIT address.",
