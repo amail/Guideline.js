@@ -82,16 +82,18 @@ Guideline.Guide(name[, options]);
 
 #### Events
 
-* start
+  ```e.g. welcomeGuide.on('complete', function(sender){ /*...*/ });```
+
+* start(Guide sender)
 > Occurrs when the guide starts.
 
-* skip
+* skip(Guide sender)
 > Occurrs when the user skips the guide.
 
-* restart
+* restart(Guide sender)
 > Occurrs when the guide is restarted.
 
-* complete
+* complete(Guide sender)
 > Occurrs when the guide ends (without being skipped).
 
 #### Methods
@@ -136,10 +138,12 @@ Guideline.Guide(name[, options]);
   
 #### Events
 
-* show
+  ```e.g. someStep.on('show', function(sender){ /*...*/ });```
+
+* show(Step sender)
 > Occurrs when the step is shown.
 
-* hide
+* hide(Step sender)
 > Occurrs when the step is hidden.
 
 #### Methods
