@@ -54,6 +54,8 @@ http://app.amail.io/js/guideline/guides.js
 
 ### Guideline
 
+>The namespace in which everything "Guideline" is present. This is an object and not a prototype so it cannot be instantiated.
+
 #### Methods
 
 * void setCurrentPage(pageName)
