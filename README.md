@@ -80,6 +80,13 @@ Guideline.Guide(name[, options]);
 > The parameter 'name' is used when determining what page a guide is residing on. I.e. it's important that this value is kept unqiue.
 > The parameter 'options' can be used to specify futher settings for this guide.
 
+<sub><i>Where options is:</i></sub>
+
+    {
+        startOnUrl: '/home', // The URL on which the first page resists. Default: null
+        skipAsDefault: true   // Whether or not the guide should initialize as 'skipped'. Meaning you must actively call the guide.start() method to start it. Default: true
+    }
+
 #### Events
 
   E.g. ```guide.on('complete', function(sender){ /*handle event*/ });```
@@ -102,7 +109,7 @@ Guideline.Guide(name[, options]);
 > Subscribe to a specific event.
 
 * Page addPage(name[, options])
-> Adds a new page to the guide.
+> Adds a new page to the guide. Refer to the Guideline.Page contructor for available options.
 
 * void start()
 > Start the guide. Notice! If the option 'startOnUrl' is present and the guide is not on the same page as the first page in the guide, the guide is redirected to the URL specified by 'startOnUrl'.
@@ -122,10 +129,19 @@ Guideline.Guide(name[, options]);
 
   ```var page = new Guideline.Page(options);```
   
+> The parameter 'options' is used to specify how a page will be setup.
+
+<sub><i>Where options is:</i></sub>
+
+    {
+        name: 'home',      // The name of this page. This value is mandatory!
+        guide: someGuide   // A reference to the owning guide. This is automatically provided when calling 'guide.addPage(...)' (which is the recommended way to add a new page).
+    }
+  
 #### Methods
 
 * Step addStep(options)
-> Adds a new step to the page.
+> Adds a new step to the page. Refer to the Guideline.Step contructor for available options.
 
 * Step[] getSteps()
 > Retrieves all steps added to this page.
@@ -135,6 +151,21 @@ Guideline.Guide(name[, options]);
 >A step is a logical representation of actions on a page.
 
   ```var step = new Guideline.Step(options);```
+  
+> The parameter 'options' is used to specify how a step will be setup.
+
+<sub><i>Where options is:</i></sub>
+
+    {
+        type: 'bubble',                // The type of step. Can either be 'bubble' or 'overlay'. Default is 'bubble'.
+        title: 'My amazing step!',     // Adds a headline (h1-tag) to the content. Is not shown if value is 'null'. Default: null
+        content: 'This is just...',    // Adds content (text/html) to the step! Not shown if value is 'null'. Default null
+        showSkip: true,                // Whether or not to show a 'Skip this step' button. Default: true
+        showContinue: false,           // Whether or not to show a 'Continue' button on the step. Default: false
+        continueWhen: 'click #button', // Condition, when met, automatically continues to the next step on the page. Can be either a string in the format of '%EVENT_NAME% %ELEMENT_NAME%', or a callback function. If a function is provided, it will be polled until that function returns true. When the function returns true, the step continues. Default: null
+        continueAfter: 0,              // Number of seconds until the step will continue. A small progress bar will visualize the elapsed/remaining time. If <= 0 then not shown/used. Default: 0
+        guide: someGuide               // A reference to the owning guide. This is automatically provided when calling 'page.addStep(...)' (which is the recommended way to add a new step).
+    }
   
 #### Events
 
