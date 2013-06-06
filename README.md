@@ -158,7 +158,7 @@ Guideline.Guide(name[, options]);
 
     {
         type: 'bubble',                // The type of step. Can either be 'bubble' or 'overlay'. Default is 'bubble'.
-        title: 'My amazing step!',     // Adds a headline (h1-tag) to the content. Is not shown if value is 'null'. Default: null
+        title: 'My amazing step!',     // Adds a headline (h1-tag) to the content. Not shown if value is 'null'. Default: null
         content: 'This is just...',    // Adds content (text/html) to the step! Not shown if value is 'null'. Default null
         showSkip: true,                // Whether or not to show a 'Skip this step' button. Default: true
         showContinue: false,           // Whether or not to show a 'Continue' button on the step. Default: false
