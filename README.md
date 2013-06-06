@@ -3,6 +3,8 @@ Guideline.js
 
 JavaScript library for creating non-invasive guides/tours.
 
+![Guideline.js example](http://github.com/comfirm/Guideline.js/raw/master/examples/images/example.png)
+
 ## TLDR;
 
 ### Create a guide
