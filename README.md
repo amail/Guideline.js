@@ -82,7 +82,7 @@ Guideline.Guide(name[, options]);
 
 #### Events
 
-  ```E.g. guide.on('complete', function(sender){ /*handle event*/ });```
+  E.g. ```guide.on('complete', function(sender){ /*handle event*/ });```
 
 * start(Guide sender)
 > Occurrs when the guide starts.
@@ -138,7 +138,7 @@ Guideline.Guide(name[, options]);
   
 #### Events
 
-  ```E.g. step.on('show', function(sender){ /*handle event*/ });```
+  E.g. ```step.on('show', function(sender){ /*handle event*/ });```
 
 * show(Step sender)
 > Occurrs when the step is shown.
