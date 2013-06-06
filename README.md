@@ -158,4 +158,4 @@ Guideline.Guide(name[, options]);
 > Hide the step.
 
 * void changeToNextStep()
-> If connected to a page, change to the next step on that page. Caveats: only works if the step is shown and if it hasn't been changed yed.
+> If connected to a page, change to the next step on that page. Caveats: only works if the step is shown and if it hasn't been changed yet.
