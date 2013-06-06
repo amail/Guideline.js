@@ -94,7 +94,7 @@ Guideline.Guide(name[, options]);
 
 #### Methods
 
-* void on(eventName, handler)
+* Guide on(eventName, handler)
 > Subscribe to a specific event.
 
 * Page addPage(options)
@@ -136,7 +136,7 @@ Guideline.Guide(name[, options]);
 
 #### Methods
 
-* void on(eventName, handler)
+* Step on(eventName, handler)
 > Subscribe to a specific event.
 
 * void show()
