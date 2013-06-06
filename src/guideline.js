@@ -283,12 +283,13 @@
 			var currentTime = new Date().getTime();
 
 			for(var i=0;i<this._items.length;++i){
+				var result = null;
 				var item = this._items[i];
 				if(item !== null){
 					if(item.expireAt !== null && item.expireAt < currentTime){
 						item.callback('Callback expired');
-					}else if(item.condition()){
-						item.callback(null, item.id);
+					}else if((result = item.condition())){
+						item.callback(null, result);
 					}else{
 						// Not finished yet, push back onto queue
 						items.push(item);
@@ -359,7 +360,7 @@
 	};
 
 	Guide.prototype.setSkipAsDefault = function(skip){
-		this._skipAsDefault = skip || false;
+		this._skipAsDefault = skip === undefined ? true : skip;
 	};
 
 	// Page
@@ -645,15 +646,23 @@
 		this.title = options.title || null;
 		this.content = options.content || null;
 		this.showAt = options.showAt || "document";
-		this.align = options.align || "auto";
-		this.overlay = options.overlay || {};
 		this.showSkip = options.showSkip || true;
+		this.align = options.align || "auto";
+		this.overlayOptions = options.overlayOptions || {};
 		
 		this.continueHtml = options.continueHtml || null;
 		this.continueAfter = options.continueAfter || 0;
-		this.showContinue = options.showContinue == null ? false : options.showContinue;
-		this.continueWhen = options.continueWhen ? (typeof (options.continueWhen) != 'string' ?
-			options.continueWhen : Utility.parseEvent(options.continueWhen)) : null;
+		this.showContinue = options.showContinue === true;
+
+		if(options.continueWhen !== undefined && typeof (options.continueWhen) != 'string'){
+			this.continueWhen = options.continueWhen;
+		}else{
+			if(options.continueWhen === undefined && typeof (options.showAt) == 'string'){
+				options.continueWhen = 'click ' + this.showAt;
+			}
+
+			this.continueWhen = options.continueWhen ? Utility.parseEvent(options.continueWhen) : null;
+		}
 	};
 
 	Step.prototype.on = function(event, handler){
@@ -713,7 +722,8 @@
 		var contentElements = $("<div />");
 
 		if(this.title){
-			contentElements.append($("<h2 />").text(this.title));
+			var headingLevel = this.type == "overlay" ? 1 : 2;
+			contentElements.append($("<h"+headingLevel+" />").text(this.title));
 		}
 
 		if(this.content){
@@ -801,11 +811,13 @@
 
 	Step.prototype.getOverlay = function(){
 		var outerScope = this;
+
 		var overlayTarget = this.showAt == "window" || this.showAt == "document" ? undefined : $(this.showAt);
+		var contentElement = $("<div />").addClass('gl-overlay').append(this.getContentElements());
 
 		return $.lightShow({
 			overlay: overlayTarget,
-			content: this.getContentElements(),
+			content: contentElement,
 			callback: {
 				hide: {
 					after: function(){
@@ -813,7 +825,7 @@
 					}
 				}
 			},
-			style: this.overlay.style
+			style: this.overlayOptions.style
 		});
 	};
 
@@ -876,7 +888,7 @@
 
 		if(scroll){
 			if(!$.isWindow(target.get(0))){
-				$.scrollTo(position.y/2, 400);
+				$.scrollTo(position.y-($(window).outerHeight()/2)+(element.outerHeight()/2), 400);
 			}
 		}
 
@@ -935,12 +947,23 @@
 			this._visible = true;
 			var element = this.getElement();
 
-			Guideline.registerConditionCheck(function(){
-				return $(outerScope.showAt).length > 0;
-			}, function(error){
-				outerScope.positionAt(outerScope.showAt, outerScope.align);
-				element.fadeIn();
-			});
+			if(typeof(outerScope.showAt) == 'function'){
+				Guideline.registerConditionCheck(
+					outerScope.showAt,
+					function(error, result){
+						outerScope.showAt = result;
+						outerScope.positionAt(outerScope.showAt, outerScope.align);
+						element.fadeIn();
+					}
+				);
+			}else{
+				Guideline.registerConditionCheck(function(){
+					return $(outerScope.showAt).length > 0;
+				}, function(error){
+					outerScope.positionAt(outerScope.showAt, outerScope.align);
+					element.fadeIn();
+				});
+			}
 
 			return element;
 		}
