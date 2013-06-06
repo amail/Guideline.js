@@ -102,11 +102,17 @@ Guideline.Guide(name[, options]);
 * Page addPage(name[, options])
 > Adds a new page to the guide.
 
-* void begin()
-> Begins a new story.
+* void start()
+> Start the guide. Notice! If the option 'startOnUrl' is present and the guide is not on the same page as the first page in the guide, the guide is redirected to the URL specified by 'startOnUrl'.
 
 * void restart()
-> Restarts a story.
+> Restart the story.
+
+* void skip()
+> Skip the guide.
+
+* void register()
+> Registers the guide so that it is globally accessible and so that it can receive page change events. Notice! This should always be the last call when you finish your guide.
 
 ### Page
 
