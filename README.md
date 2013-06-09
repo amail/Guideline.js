@@ -194,3 +194,11 @@ Guideline.Guide(name[, options]);
 
 * void changeToNextStep()
 > If connected to a page, change to the next step on that page. Caveats: only works if the step is shown and if it hasn't been changed yet.
+
+## Dependencies
+
+### Libraries
+
+* [jQuery](http://jquery.com/) - This library relies heavily on jQuery. Tested for jQuery >= v1.9.1.
+* [LightShow.js](https://github.com/comfirm/LightShow.js) - This library used LightShow whenever there is an overlay.
+* [jquery.scrollTo](https://github.com/flesler/jquery.scrollTo) - Used when scrolling smoothly to a certain position
