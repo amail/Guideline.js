@@ -48,7 +48,8 @@ repositoryPage.addStep({
         var heading = $("h3 a[name='create-a-guide']");
         return heading.length == 1 ? heading.parent() : false;
     },
-    align: "center top"
+    align: "center top",
+    continueAfter: 8 // seconds
 });
 
 repositoryPage.addStep({
