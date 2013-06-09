@@ -10,7 +10,7 @@ Even though you have synchronization and events occuring at random, this library
 Guideline treats all steps as synchronous steps. Even though their nature might be asynchronous.
 How? It uses a polling technique. I.e. it polls callback functions or if a CSS selector is specified, it polls the selector until a match is available.
 
-[>> **Show it in action!** <<](http://amail.io/assets/libraries/Guideline.js/examples/github/)
+[>> **Show it in action!** <<](http://amail.io/assets/libraries/Guideline.js/examples/github/) ([see the code for it here](https://github.com/comfirm/Guideline.js/tree/master/examples/github))
 
 ## Example
 
