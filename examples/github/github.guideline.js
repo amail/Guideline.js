@@ -100,8 +100,8 @@ repositoryPage.addStep({
     type: "overlay",
     title: "And that's it! Did you like it?",
     content: (
-        '<p>Tweet about it or help contribute!</p>' +
-        '<p><a href="https://twitter.com/intent/tweet?button_hashtag=guidelinejs&text=JavaScript%20library%20for%20creating%20non-invasive%20guides/tours." class="twitter-hashtag-button" data-lang="en" data-related="jasoncosta">Tweet #guidelinejs</a></p>' + "\n" +
+        '<p><a style="vertical-align:bottom;" href="https://twitter.com/intent/tweet?button_hashtag=guidelinejs&text=JavaScript%20library%20for%20creating%20non-invasive%20guides/tours." class="twitter-hashtag-button" data-lang="en" data-related="jasoncosta">Tweet #guidelinejs</a> or contribute!</p>' +
+        '<p><button class="btn btn-large btn-primary btn-alpha-blue hide-button"><i class="icon-circle-arrow-right"></i> Amazing. Thanks!</button></p>' +
         '<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>'
     ),
     overlayOptions: {
