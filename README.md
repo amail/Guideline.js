@@ -5,34 +5,122 @@ JavaScript library for creating non-invasive guides/tours.
 
 [>> **Show it in action!** <<](http://amail.io/assets/libraries/Guideline.js/examples/github/)
 
-## TLDR;
+## Example
 
 ### Create a guide
 
-    var welcomeGuide = new Guideline.Guide("welcome");
+    var githubGuide = new Guideline.Guide("github");
     
-    var homePage = welcomeGuide.addPage("ProjectListCtrl");
+    var repositoryPage = githubGuide.addPage("repository");
     
-    homePage.addStep({
+    repositoryPage.addStep({
         type: "overlay",
-        overlay: {
+        title: "This is Guideline.js running on GitHub!",
+        content: (
+            "<p>Works without changing <u>anything</u> in the GitHub code</p>"+
+            "<button class='btn btn-large btn-primary btn-alpha-blue hide-button'><i class='icon-circle-arrow-right'></i> Amazing... Show me more!</button>"+
+            "<br/>"+
+            "<a href='#' class='gl-skip'>I don't care. Skip this.</a>"
+        ),
+        overlayOptions: {
             style: {
                 opacity: 0.9
             }
-        },
-        showContinue: false,
-        content: "<div class='gl-overlay'>" + "<h1>Welcome to AlphaMail!</h1>" + "<p>Let's get familiar with the dashboard by creating <strong>a new project</strong>, <strong>build a template</strong> for it, and then <strong>send a test message</strong>.</p>" + "<button class='btn btn-large btn-primary btn-alpha-blue hide-button'><i class='icon-circle-arrow-right'></i> Get started</button>" + "<br/>" + "<a href='#' class='gl-skip'>or skip this</a>" + "</div>"
+        }
     });
     
-    homePage.addStep({
-        title: "First, create a new project...",
-        showAt: "#create-new-project",
+    repositoryPage.addStep({
+        title: "This is the repository name. Remember it!",
+        showAt: ".js-current-repository",
         align: "right middle",
-        continueWhen: "click #create-new-project",
-        showContinue: false
+        continueAfter: 5 // seconds
     });
-
-    welcomeGuide.register();
+    
+    repositoryPage.addStep({
+        title: "Click on 'SSH' to show the GIT address.",
+        content: "You need to click on the button to continue.",
+        showAt: ".public_clone_url",
+        align: "center top"
+    });
+    
+    repositoryPage.addStep({
+        title: "This is the GIT address! Clone it and contribute!",
+        content: "Just 'git clone git@github.com:comfirm/Guideline.js.git'",
+        showAt: "input.js-url-field",
+        align: "center top",
+        continueAfter: 7 // seconds
+    });
+    
+    repositoryPage.addStep({
+        title: "This is the exact code that is running right now!",
+        showAt: function(){
+            var heading = $("h2 a[name='example']");
+            return heading.length == 1 ? heading.parent() : false;
+        },
+        align: "center top",
+        continueAfter: 5 // seconds
+    });
+    
+    repositoryPage.addStep({
+        title: "Guideline was actually created for AlphaMail!",
+        content: "If you head to <a href='http://app.amail.io/'>AlphaMail</a> and signup, you'll actually get the welcome guide the first time you login!",
+        showAt: function(){
+            var heading = $("h2 a[name='real-world-example']");
+            return heading.length == 1 ? heading.parent() : false;
+        },
+        align: "center top",
+        continueAfter: 8 // seconds
+    });
+    
+    repositoryPage.addStep({
+        title: "You need to call setCurrentPage on every page change",
+        content: "With this Guideline can track which page you're on and know what to show and when to show it.",
+        showAt: function(){
+            var heading = $("h4 a[name='methods']");
+            return heading.length == 1 ? heading.parent().next().find("li:first-child") : false;
+        },
+        align: "center top",
+        continueAfter: 9 // seconds
+    });
+    
+    repositoryPage.addStep({
+        title: "Guideline.getGuide(name)-method allows you to retrieve a guide from anywhere",
+        content: "You can retrieve the guide using it's name. The guide is accessible this way once the guide.register()-method has been called.",
+        showAt: function(){
+            var heading = $("h4 a[name='methods']");
+            return heading.length == 1 ? heading.parent().next().find("li:nth-child(2)") : false;
+        },
+        align: "center top",
+        continueAfter: 9 // seconds
+    });
+    
+    repositoryPage.addStep({
+        title: "Start the guide manually",
+        content: "If you're on another page, and you want to start the guide manually, you can use this method.<br />Remember to specify the 'startOnUrl'-parameter for auto redirection.",
+        showAt: function(){
+            var heading = $("h4 a[name='methods-1']");
+            return heading.length == 1 ? heading.parent().next().find("li:nth-child(3)") : false;
+        },
+        align: "center top",
+        continueAfter: 9 // seconds
+    });
+    
+    repositoryPage.addStep({
+        type: "overlay",
+        title: "And that's it! Did you like it?",
+        content: (
+            '<p>Tweet about it or help contribute!</p>' +
+            '<p><a href="https://twitter.com/intent/tweet?button_hashtag=guidelinejs&text=JavaScript%20library%20for%20creating%20non-invasive%20guides/tours." class="twitter-hashtag-button" data-lang="en" data-related="jasoncosta">Tweet #guidelinejs</a></p>' + "\n" +
+            '<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>'
+        ),
+        overlayOptions: {
+            style: {
+                opacity: 0.9
+            }
+        }
+    });
+    
+    githubGuide.register();
     
 ### Trigger a page
 
