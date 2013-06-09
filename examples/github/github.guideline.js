@@ -53,8 +53,8 @@ repositoryPage.addStep({
     title: "If you're in a rush...",
     content: "TLDR; \"Too long, didn't read\". This is the fastest way to get a grip on Guideline.js without reading the documentation.",
     showAt: function(){
-    	var heading = $("h2 a[name='tldr']");
-    	return heading.length == 1 ? heading.parent() : false;
+        var heading = $("h2 a[name='tldr']");
+        return heading.length == 1 ? heading.parent() : false;
     },
     align: "center top",
     continueAfter: 12 // seconds
@@ -64,11 +64,59 @@ repositoryPage.addStep({
     title: "Guideline was actually created for AlphaMail!",
     content: "If you head to <a href='http://app.amail.io/'>AlphaMail</a> and signup, you'll actually get the welcome guide the first time you login!",
     showAt: function(){
-    	var heading = $("h2 a[name='real-world-example']");
-    	return heading.length == 1 ? heading.parent() : false;
+        var heading = $("h2 a[name='real-world-example']");
+        return heading.length == 1 ? heading.parent() : false;
     },
     align: "center top",
     continueAfter: 12 // seconds
+});
+
+repositoryPage.addStep({
+    title: "You need to call setCurrentPage on every page change",
+    content: "With this Guideline can track which page you're on and know what to show and when to show it.",
+    showAt: function(){
+        var heading = $("h4 a[name='methods']");
+        return heading.length == 1 ? heading.parent().next().find("li:first-child") : false;
+    },
+    align: "center top",
+    continueAfter: 12 // seconds
+});
+
+repositoryPage.addStep({
+    title: "Guideline.getGuide(name)-method allows you to retrieve a guide from anywhere",
+    content: "You can retrieve the guide using it's name. The guide is accessible this way once the guide.register()-method has been called.",
+    showAt: function(){
+        var heading = $("h4 a[name='methods']");
+        return heading.length == 1 ? heading.parent().next().find("li:nth-child(2)") : false;
+    },
+    align: "center top",
+    continueAfter: 12 // seconds
+});
+
+repositoryPage.addStep({
+    title: "Start the guide manually",
+    content: "If you're on another page, and you want to start the guide manually, you can use this method.<br />Remember to specify the 'startOnUrl'-parameter for auto redirection.",
+    showAt: function(){
+        var heading = $("h4 a[name='methods-1']");
+        return heading.length == 1 ? heading.parent().next().find("li:nth-child(3)") : false;
+    },
+    align: "center top",
+    continueAfter: 12 // seconds
+});
+
+repositoryPage.addStep({
+    type: "overlay",
+    title: "And that's it! Did you like it?",
+    content: (
+        '<p>Tweet about it or help contribute!</p>' +
+        '<p><a href="https://twitter.com/intent/tweet?button_hashtag=guidelinejs&text=JavaScript%20library%20for%20creating%20non-invasive%20guides/tours." class="twitter-hashtag-button" data-lang="en" data-related="jasoncosta">Tweet #guidelinejs</a></p>' + "\n" +
+        '<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>'
+    ),
+    overlayOptions: {
+        style: {
+            opacity: 0.9
+        }
+    }
 });
 
 githubGuide.register();
