@@ -43,21 +43,12 @@ repositoryPage.addStep({
 });
 
 repositoryPage.addStep({
-    title: "This is our total number of commits.",
-    showAt: ".frame-meta .history-link",
-    align: "right middle",
-    continueAfter: 4 // seconds
-});
-
-repositoryPage.addStep({
-    title: "If you're in a rush...",
-    content: "TLDR; \"Too long, didn't read\". This is the fastest way to get a grip on Guideline.js without reading the documentation.",
+    title: "This is the exact code that is running right now!",
     showAt: function(){
-        var heading = $("h2 a[name='tldr']");
+        var heading = $("h3 a[name='create-a-guide']");
         return heading.length == 1 ? heading.parent() : false;
     },
-    align: "center top",
-    continueAfter: 12 // seconds
+    align: "center top"
 });
 
 repositoryPage.addStep({
@@ -68,7 +59,7 @@ repositoryPage.addStep({
         return heading.length == 1 ? heading.parent() : false;
     },
     align: "center top",
-    continueAfter: 12 // seconds
+    continueAfter: 8 // seconds
 });
 
 repositoryPage.addStep({
@@ -79,7 +70,7 @@ repositoryPage.addStep({
         return heading.length == 1 ? heading.parent().next().find("li:first-child") : false;
     },
     align: "center top",
-    continueAfter: 12 // seconds
+    continueAfter: 9 // seconds
 });
 
 repositoryPage.addStep({
@@ -90,7 +81,7 @@ repositoryPage.addStep({
         return heading.length == 1 ? heading.parent().next().find("li:nth-child(2)") : false;
     },
     align: "center top",
-    continueAfter: 12 // seconds
+    continueAfter: 9 // seconds
 });
 
 repositoryPage.addStep({
@@ -101,7 +92,7 @@ repositoryPage.addStep({
         return heading.length == 1 ? heading.parent().next().find("li:nth-child(3)") : false;
     },
     align: "center top",
-    continueAfter: 12 // seconds
+    continueAfter: 9 // seconds
 });
 
 repositoryPage.addStep({
