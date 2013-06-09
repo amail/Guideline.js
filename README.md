@@ -199,6 +199,6 @@ Guideline.Guide(name[, options]);
 
 ### Libraries
 
-* [jQuery](http://jquery.com/) - This library relies heavily on jQuery. Tested for jQuery >= v1.9.1.
-* [LightShow.js](https://github.com/comfirm/LightShow.js) - This library used LightShow whenever there is an overlay.
-* [jquery.scrollTo](https://github.com/flesler/jquery.scrollTo) - Used when scrolling smoothly to a certain position
+* [jQuery](http://jquery.com/) - jQuery is used throughout the library. Recommended jQuery version >=1.9.1.
+* [LightShow.js](https://github.com/comfirm/LightShow.js) - LightShow is used whenever there is an overlay present.
+* [jquery.scrollTo](https://github.com/flesler/jquery.scrollTo) - Used when scrolling smoothly to a certain window position.
