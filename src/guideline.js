@@ -503,17 +503,19 @@
 			parentStep.hide();
 		}
 
-		var cookieValue = Utility.Cookie.get("guideline_"+this.getName());
+		if(!this.getStarted()){
+			var cookieValue = Utility.Cookie.get("guideline_"+this.getName());
 
-		if(cookieValue === null && this._skipAsDefault){
-			cookieValue = "skipped";
-			Utility.Cookie.set("guideline_"+this.getName(), "skipped");
-		}
+			if(cookieValue === null && this._skipAsDefault){
+				cookieValue = "skipped";
+				Utility.Cookie.set("guideline_"+this.getName(), "skipped");
+			}
 
-		// Check whether or not this guide is skipped
-		if(cookieValue == "skipped"){
-			return;
-		}
+			// Check whether or not this guide is skipped
+			if(cookieValue == "skipped"){
+				return;
+			}
+		}	
 
 		var nextPage = this.getNextPage();
 
@@ -545,6 +547,7 @@
 		}
 
 		this.reset();
+		this.setStarted(true);
 		Utility.Cookie.set("guideline_"+this.getName(), -1);
 
 		// Check whether current page is our start page
