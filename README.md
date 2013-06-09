@@ -126,11 +126,11 @@ JavaScript library for creating non-invasive guides/tours.
 
 Tell Guideline.js which page you're on.
 
-    Guideline.setCurrentPage("home");
+    Guideline.setCurrentPage("repository");
     
 ### Start the guide
 
-    Guideline.getGuide("welcome").start();
+    Guideline.getGuide("github").start();
 
 ## Real world example
 
