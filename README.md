@@ -3,7 +3,7 @@ Guideline.js
 
 JavaScript library for creating non-invasive guides/tours.
 
-[Click here to start an example guide!](http://amail.io/assets/libraries/Guideline.js/examples/github/)
+[>> **Show it in action!** <<](http://amail.io/assets/libraries/Guideline.js/examples/github/)
 
 ## TLDR;
 
