@@ -54,11 +54,11 @@ JavaScript library for creating non-invasive guides/tours.
     repositoryPage.addStep({
         title: "This is the exact code that is running right now!",
         showAt: function(){
-            var heading = $("h2 a[name='example']");
+            var heading = $("h3 a[name='create-a-guide']");
             return heading.length == 1 ? heading.parent() : false;
         },
         align: "center top",
-        continueAfter: 5 // seconds
+        continueAfter: 8 // seconds
     });
     
     repositoryPage.addStep({
