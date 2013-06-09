@@ -3,13 +3,14 @@ Guideline.js
 
 JavaScript library for creating non-invasive guides/tours.
 
-[>> **Show it in action!** <<](http://amail.io/assets/libraries/Guideline.js/examples/github/)
-
-## "Non-invasive"?
+### "Non-invasive"?
 
 This means that you can create guides that integrate perfectly but doesn't invade your codebase.
-Even though you have synchronization and events firing at random, this library can take care of that.
+Even though you have synchronization and events occuring at random, this library can take care of that.
+Guideline treats all steps as synchronous steps. Even though their nature might be asynchronous.
 How? It uses a polling technique. I.e. it polls callback functions or if a CSS selector is specified, it polls the selector until a match is available.
+
+[>> **Show it in action!** <<](http://amail.io/assets/libraries/Guideline.js/examples/github/)
 
 ## Example
 
