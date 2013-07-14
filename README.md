@@ -44,21 +44,6 @@ How? It uses a polling technique. I.e. it polls callback functions or if a CSS s
     });
     
     repositoryPage.addStep({
-        title: "Click on 'SSH' to show the GIT address.",
-        content: "You need to click on the button to continue.",
-        showAt: ".public_clone_url",
-        align: "center top"
-    });
-    
-    repositoryPage.addStep({
-        title: "This is the GIT address! Clone it and contribute!",
-        content: "Just 'git clone git@github.com:comfirm/Guideline.js.git'",
-        showAt: "input.js-url-field",
-        align: "center top",
-        continueAfter: 7 // seconds
-    });
-    
-    repositoryPage.addStep({
         title: "This is the exact code that is running right now!",
         showAt: function(){
             var heading = $("h3 a[name='create-a-guide']");

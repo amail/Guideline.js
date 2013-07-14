@@ -28,21 +28,6 @@ repositoryPage.addStep({
 });
 
 repositoryPage.addStep({
-    title: "Click on 'SSH' to show the GIT address.",
-    content: "You need to click on the button to continue.",
-    showAt: ".public_clone_url",
-    align: "center top"
-});
-
-repositoryPage.addStep({
-    title: "This is the GIT address! Clone it and contribute!",
-    content: "Just 'git clone git@github.com:comfirm/Guideline.js.git'",
-    showAt: "input.js-url-field",
-    align: "center top",
-    continueAfter: 7 // seconds
-});
-
-repositoryPage.addStep({
     title: "This is the exact code that is running right now!",
     showAt: function(){
         var heading = $("h3 a[name='create-a-guide']");
@@ -53,8 +38,8 @@ repositoryPage.addStep({
 });
 
 repositoryPage.addStep({
-    title: "Guideline was actually created for AlphaMail!",
-    content: "If you head to <a href='http://app.amail.io/'>AlphaMail</a> and signup, you'll actually get the welcome guide the first time you login!",
+    title: "Guideline was actually created for AlphaMail",
+    content: "If you head to <a href='http://app.amail.io/'>AlphaMail</a> and signup, you'll actually get the a welcome guide the first time you login.",
     showAt: function(){
         var heading = $("h2 a[name='real-world-example']");
         return heading.length == 1 ? heading.parent() : false;
