@@ -70,7 +70,7 @@
 	// Read the GitHub repository HTML and inject our tags into it
 	$content = file_get_contents($github_url.$repository_name);
 	$content = str_replace('href="/', 'href="'.$github_url, $content); // Change relative URLs to absolute
-	$content = str_replace('<div id="wrapper">', '<div id="wrapper">'.$disclaimer, $content); // Inject a disclaimer so visiters are aware that this is a proxy
+	$content = str_replace('<div class="wrapper">', '<div class="wrapper">'.$disclaimer, $content); // Inject a disclaimer so visiters are aware that this is a proxy
 	$content = str_replace('<meta http-equiv="x-pjax-version"', implode("\n", $content_injections)."\n".'<meta http-equiv="x-pjax-version"', $content);
 	
 	echo($content);
