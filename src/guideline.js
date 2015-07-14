@@ -22,6 +22,16 @@
 	    handlers.splice(0, 0, handler);
 	};
 
+	// Remove attached handler
+	Utility.removeHandler = function(selector, eventName, callback) {
+
+		var element = $(selector).off(eventName, callback)[0];
+		var safeEventName = eventName.split('.')[0].split(' ')[0];
+		// if( $._data(element, 'events')[safeEventName] ){
+		// 	console.log('event found in jquery ._data');
+		// }
+	}
+
 	// Parse an event 
 	Utility.parseEvent = function(rawEvent){
 		var data = {};
@@ -96,6 +106,10 @@
 					break;
 			}
 		}
+
+		// Add rounding
+		xPosition = Number(Math.round(xPosition));
+		yPosition = Number(Math.round(yPosition));
 
 		return {
 			'x': xPosition,
@@ -278,6 +292,7 @@
 		if(!this._polling){
 			this._polling = true;
 
+			// Create new queue
 			var items = [];
 			var outerScope = this;
 			var currentTime = new Date().getTime();
@@ -588,6 +603,20 @@
 	};
 
 	Guide.prototype.reset = function(){
+		/**
+		 * Iterate steps and reset _hasChanged
+		 * FIXES broken 'continue' buttons when tour restarted
+		 */
+		if (this._steps) {
+			for(var i=0;i<this._steps.length;++i){
+				this._steps[i]._hasChanged = false;
+				// console.log('step title: ' + this._steps[i].title + ' num: ' + i);
+
+				// Replace showAt property with original
+				this._steps[i].showAt = this._steps[i].showAtOriginal;
+			}
+		}
+		
 		this._steps = [];
 		this.setStarted(false);
 		this.setParentStep(null);
@@ -624,9 +653,48 @@
 		return step;
 	};
 
+	// Remove steps
+	Guide.prototype.removeSteps = function(options){
+
+		// console.log('Guide.this._steps: ' + this._steps.length );
+
+		// Remove steps from page
+		var pageSteps = this.getPage().getSteps();
+		// console.log('Page.this._steps: ' + pageSteps.length );
+
+		// Iterate steps
+		for(var i=0;i<this._steps.length;++i){
+			// If not null
+			if(this._steps[i] != null && pageSteps[i] != null) {
+
+				// console.log('step[i]: ' + i);
+
+				// Remove continueWhen event listeners
+				// console.log('selector: ' + this._steps[i]._event_selector_name + ' eventname: ' + this._steps[i]._event_event_name + ' callback: ' + this._steps[i]._event_callback_function);
+				if( typeof(this._steps[i].continueWhen) == 'function' ) {
+					Utility.removeHandler(this._steps[i]._event_selector_name, this._steps[i]._event_event_name, this._steps[i]._event_callback_function);
+					Utility.removeHandler(pageSteps[i]._event_selector_name, pageSteps[i]._event_event_name, pageSteps[i]._event_callback_function);
+					// console.log('RS - continueWhen function');
+				}
+
+				// Remove showAt event listeners
+				if( typeof(this._steps[i].showAt) == 'function' ) {
+					// console.log('RS - showAt function');
+				}
+
+				this._steps[i] = pageSteps[i] = null;
+			}
+		};
+		this._steps = pageSteps = [];
+
+		// console.log('Guide.this._steps: ' + this._steps.length );
+		// console.log('Page.this._steps: ' + pageSteps.length );
+	};
+
+
 	Page.prototype.getStep = function(offset){
 		return offset < this._steps.length ? this._steps[offset] : null;
-	}
+	};
 
 	Page.prototype.getSteps = function(){
 		return this._steps;
@@ -643,15 +711,20 @@
 		this._progressBar = null;
 		this._bubble = null;
 		this._emitter = new EventEmitter();
+		this._event_selector_name = null;
+		this._event_event_name = null;
+		this._event_callback_function = null;
 
 		this.type = options.type || 'bubble';
 		this.guide = options.guide || null;
 		this.title = options.title || null;
 		this.content = options.content || null;
+		this.showAtOriginal = options.showAt;
 		this.showAt = options.showAt || "document";
 		this.showSkip = options.showSkip || true;
 		this.align = options.align || "auto";
 		this.overlayOptions = options.overlayOptions || {};
+		this.scrollToItem = options.scrollToItem || false;
 		
 		this.continueHtml = options.continueHtml || null;
 		this.continueAfter = options.continueAfter || 0;
@@ -666,6 +739,11 @@
 
 			this.continueWhen = options.continueWhen ? Utility.parseEvent(options.continueWhen) : null;
 		}
+
+		// Add cleanup listener
+		this._emitter.on('destroyBubble', function() {
+            _self._bubble = null;
+        });
 	};
 
 	Step.prototype.on = function(event, handler){
@@ -725,7 +803,7 @@
 		var contentElements = $("<div />");
 
 		if(this.title){
-			var headingLevel = this.type == "overlay" ? 1 : 2;
+			var headingLevel = this.type == "overlay" ? 1 : 4;
 			contentElements.append($("<h"+headingLevel+" />").text(this.title));
 		}
 
@@ -745,7 +823,7 @@
 		}
 
 		if (this.showSkip && this.type != "overlay") {
-			var skipElement = $('<a href="#" class="gl-skip gl-close" title="Close Guide">&times;</a>');
+			var skipElement = $('<button type="button" class="gl-skip gl-close" title="Close Guide">&times;</button>');
 			skipElement.click(function(){
 				outerScope.guide.skip();
 				return false;
@@ -793,9 +871,12 @@
 						if(isEventFunction){
 							outerScope.changeToNextStep();
 						}else{
-							Utility.attachOnFirst(event.selector, event.name, function(){
+							Utility.attachOnFirst(event.selector, event.name, function matchCallback(){
 								outerScope.changeToNextStep();
 							});
+							outerScope._event_selector_name = event.selector;
+							outerScope._event_event_name = event.name;
+							outerScope._event_callback_function = function matchCallback(){ outerScope.changeToNextStep(); };
 						}
 					});
 				}
@@ -812,6 +893,7 @@
 		return this._actor;
 	};
 
+	// OBSOLETE
 	Step.prototype.getOverlay = function(){
 		var outerScope = this;
 
@@ -833,12 +915,16 @@
 	};
 
 	Step.prototype.getBubble = function(){
+		_self = this;
+
 		if(!this._bubble){
 			this._bubble = new Bubble({
 				content: this.getContentElements(),
 				showAt: this.showAt,
-				align: this.align
-			});
+				align: this.align,
+				_parent_emitter: this._emitter,
+				scrollToItem: this.scrollToItem
+			});	
 		}
 		return this._bubble;
 	};
@@ -849,9 +935,12 @@
 		this._visible = false;
 		this._cachedElement = null;
 		this._redraw_position_timer_id = -1;
+		this._cachedOverlay = null; // Save reference to overlay
 		this.content = options.content ||null;
 		this.showAt = options.showAt ||null;
 		this.align = options.align ||null;
+		this._parent_emitter = options._parent_emitter ||null;
+		this.scrollToItem = options.scrollToItem;
 	};
 
 	Bubble.parseAlignment = function(alignment){
@@ -889,9 +978,12 @@
 		var position = Utility.getRelativeElementPosition(target, element, alignment.x, alignment.y);
 		element.addClass(Bubble.getArrowAlignment(alignment));
 
-		if(scroll){
-			if(!$.isWindow(target.get(0))){
-				$.scrollTo(position.y-($(window).outerHeight()/2)+(element.outerHeight()/2), 400);
+		// If scrollToItem parameter is true
+		if (this.scrollToItem) {
+			if(scroll){
+				if(!$.isWindow(target.get(0))){
+					$.scrollTo(position.y-($(window).outerHeight()/2)+(element.outerHeight()/2), 400);
+				}
 			}
 		}
 
@@ -943,12 +1035,36 @@
 		return this._cachedElement;
 	};
 
+
+	// Added new overlay object factory
+	Bubble.prototype.getOverlayElement = function(){
+		// If not created already
+		if(!this._cachedOverlay) {
+			this._cachedOverlay = $("<div />")
+				.addClass("guideline-overlay")
+				.css({
+					display: "none",
+					position: "absolute",
+					left: 0,
+					top: 0,
+					width: "100%",
+					height: "100%"
+				})
+				.appendTo("body");
+		}
+
+		return this._cachedOverlay;
+	};
+
+
 	Bubble.prototype.show = function(){
 		var outerScope = this;
 
 		if(!this._visible){
 			this._visible = true;
 			var element = this.getElement();
+
+			// console.log('Bubble showAt: ' + typeof(outerScope.showAt));
 
 			if(typeof(outerScope.showAt) == 'function'){
 				Guideline.registerConditionCheck(
@@ -957,6 +1073,11 @@
 						outerScope.showAt = result;
 						outerScope.positionAt(outerScope.showAt, outerScope.align);
 						element.fadeIn();
+
+						// Trigger event
+						if (outerScope._parent_emitter) {
+							outerScope._parent_emitter.emit('showAtConditionSatisfied', this);
+						}
 					}
 				);
 			}else{
@@ -964,6 +1085,7 @@
 					return $(outerScope.showAt).length > 0;
 				}, function(error){
 					outerScope.positionAt(outerScope.showAt, outerScope.align);
+
 					element.fadeIn();
 				});
 			}
@@ -973,10 +1095,17 @@
 	};
 
 	Bubble.prototype.hide = function(){
+		var outerScope = this;
+
 		if(this._visible){
 			this._visible = false;
 			clearTimeout(this._redraw_position_timer_id);
-			this.getElement().fadeOut();
+			this.getElement().fadeOut(300, function(){
+				// Trigger event
+				// if (outerScope._parent_emitter) {
+				// 	outerScope._parent_emitter.emit('destroyBubble', this);
+				// }
+			});
 		}
 	};
 })();
