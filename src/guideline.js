@@ -123,38 +123,12 @@
 	Utility.Cookie = {};
 
 	Utility.Cookie.get = function(name){
-		var cookies = {};
-		var decodeComponent = decodeURIComponent;
-		var data = (document.cookie || "").split("; ");
-
-		for(var i=0;i<data.length;++i){
-			var segments = data[i].split("=", 2);
-			if(segments.length == 2){
-				cookies[decodeComponent(segments[0])] = decodeComponent(segments[1]);
-			}
-		}
-
-		return (name === undefined ? cookies : (name in cookies ? cookies[name] : null));
+		return $.cookie(name);
 	};
 
 	Utility.Cookie.set = function(name, value, expires, path){
-		var variables = {};
-		var encodeComponent = encodeURIComponent;
-
-		variables[name] = value == undefined || value == null ? '' : value;
-		variables['path'] = path || '/';
-
-		if(expires && expires.toGMTString){
-			variables["expires"] = expires.toGMTString();
-		}
-
-		var cookie = "";
-
-		for(var key in variables){
-			cookie += (cookie != "" ? "; " : "") + encodeComponent(key) + "=" + encodeComponent(variables[key]);
-		}
-
-		document.cookie = cookie;
+		path = path || '/';
+		$.cookie(name, value, {path, expires});
 	};
 
 	Utility.Cookie.remove = function(name){
@@ -328,6 +302,7 @@
 
 		this._pages = [];
 		this._emitter = new EventEmitter();
+		this.memoizeLasStep = options.memoizeLasStep || false;
 
 		this.setName(name);
 		this.setStartOnUrl(options.startOnUrl);
@@ -406,10 +381,17 @@
 			this._steps = this.getPage().getSteps();
 		}
 
-		this.changeToNextStep();
 	};
 
 	// Step
+    
+    Guide.prototype.saveStep = function(step){
+        if(this.memoizeLasStep){
+            var stepOffset = this.getStepOffset();
+            if(step === null){++stepOffset;}
+            Utility.Cookie.set("guideline_"+this.getName()+"_"+Guideline._currentPage, stepOffset);
+        }
+    };
 
 	Guide.prototype.changeToNextStep = function(){
 		var parentStep = this.getParentStep();
@@ -435,10 +417,60 @@
 			this.setParentStep(nextStep);
 			nextStep.show();
 		}
+		return nextStep
+	};
+
+    Guide.prototype.goToStep = function(step){
+        if(step){
+            var step_id = 0;
+            var parentStep = this.getParentStep();
+            if(parentStep){parentStep.hide();}
+            while(step_id < step){
+                var nextStep = this.getNextStep();
+                this.incrementStepOffset();
+                if(nextStep){
+                    this.setParentStep(nextStep);
+                    nextStep.hide();
+                }
+                step_id+=1;
+            }
+        }
+    };
+
+	Guide.prototype.changeToPreviousStep = function(){
+		var parentStep = this.getParentStep();
+
+		var previousStep = this.getPreviousStep();
+		this.decrementStepOffset();
+		
+		if(parentStep == null){
+			this._emitter.emit('start', this);
+		}else{	
+			parentStep.hide();
+		}
+
+		if(previousStep == null){
+			// Write page to begin at
+			Utility.Cookie.set("guideline_"+this.getName(), this.getPageOffset());
+		}else{
+			this.setParentStep(previousStep);
+			previousStep._hasChanged = false;
+			previousStep.show();
+		}
 	};
 
 	Guide.prototype.getNextStep = function(){
 		var stepOffset = this.getStepOffset()+1;
+
+		if(stepOffset >= 0 && stepOffset <= this._steps.length-1){
+			return this.getStep(stepOffset);
+		}
+
+		return null;
+	};
+
+	Guide.prototype.getPreviousStep = function(){
+		var stepOffset = this.getStepOffset()-1;
 
 		if(stepOffset >= 0 && stepOffset <= this._steps.length-1){
 			return this.getStep(stepOffset);
@@ -459,11 +491,11 @@
 	Guide.prototype.getPageOffset = function(){
 		var storedPageOffset = parseInt(Utility.Cookie.get("guideline_"+this.getName()));
 
-		if(this._pageOffset == -1 && storedPageOffset >= -1){
+        if(this._pageOffset == -1 && storedPageOffset >= -1){
 			this._pageOffset = parseInt(storedPageOffset);
 		}
 
-		return this._pageOffset;
+        return this._pageOffset;
 	};
 
 	Guide.prototype.setPageOffset = function(offset){
@@ -487,6 +519,11 @@
 
 	Guide.prototype.incrementStepOffset = function(){
 		++this._stepOffset;
+		return this._stepOffset;
+	};
+
+	Guide.prototype.decrementStepOffset = function(){
+		--this._stepOffset;
 		return this._stepOffset;
 	};
 
@@ -532,11 +569,17 @@
 			}
 		}	
 
-		var nextPage = this.getNextPage();
+        var nextPage = this.getNextPage();
 
 		if(nextPage != null){
-			if(nextPage.getName() == pageName && (this.getStepOffset() == -1 || this.isLastStepOffset())){
+			if(nextPage.getName() == pageName && (this.getStepOffset() >= -1 || this.isLastStepOffset())){
 				this.changeToNextPage();
+				if(this.memoizeLasStep){
+					var current_step = Utility.Cookie.get("guideline_"+this.getName()+"_"+Guideline._currentPage);
+					current_step = parseInt(current_step);
+					this.goToStep(current_step);
+				}
+				this.changeToNextStep()
 			}else if(this.getPageOffset() != -1){
 				this.skip();
 			}
@@ -727,8 +770,11 @@
 		this.scrollToItem = options.scrollToItem || false;
 		
 		this.continueHtml = options.continueHtml || null;
+		this.previousHtml = options.previousHtml || null;
+		this.stepControlContainer = options.stepControlContainer || null;
 		this.continueAfter = options.continueAfter || 0;
 		this.showContinue = options.showContinue === true;
+		this.showPrevious = options.showPrevious === true;
 
 		if(options.continueWhen !== undefined && typeof (options.continueWhen) != 'string'){
 			this.continueWhen = options.continueWhen;
@@ -793,7 +839,16 @@
 		if(!this._hasChanged && this._visible){
 			this._hasChanged = true;
 			if(this.guide){
-				this.guide.changeToNextStep();
+				this.guide.saveStep(this.guide.changeToNextStep());
+			}
+		}
+	};
+
+	Step.prototype.changeToPreviousStep = function(){
+		if(!this._hasChanged && this._visible){
+			this._hasChanged = false;
+			if(this.guide){
+				this.guide.changeToPreviousStep();
 			}
 		}
 	};
@@ -814,6 +869,10 @@
 				outerScope.changeToNextStep();
 			});
 
+			$(".gl-previous", contentElement).click(function(){
+				outerScope.changeToPreviousStep();
+			});
+
 			$(".gl-skip", contentElement).click(function(){
 				outerScope.guide.skip();
 				return false;
@@ -830,6 +889,33 @@
 			});
 			contentElements.append(skipElement);
 		}
+        
+        var stepControlContainer;
+        if(this.showPrevious || this.showContinue){
+            if (typeof(this.stepControlContainer) === "string") {
+				stepControlContainer = $(this.stepControlContainer);
+			} else {
+				stepControlContainer = $("<div class='step-control-container' />");
+			}
+            contentElements.append(stepControlContainer);
+        }
+
+		if(this.showPrevious){
+			var previousElement;
+			
+			if (typeof(this.previousHtml) === "string") {
+				previousElement = $(this.previousHtml);
+			} else {
+				previousElement = $("<a />").attr("href", "#").text("Previous");
+			}
+			
+			stepControlContainer.append(
+				previousElement.click(function(){
+					outerScope.changeToPreviousStep();
+					return false;
+				})
+			);
+		}
 
 		if(this.showContinue){
 			var continueElement;
@@ -840,9 +926,10 @@
 				continueElement = $("<a />").attr("href", "#").text("Continue");
 			}
 			
-			contentElements.append(
+			stepControlContainer.append(
 				continueElement.click(function(){
-					outerScope.changeToNextStep();
+					var next_step = outerScope.changeToNextStep();
+					
 					return false;
 				})
 			);

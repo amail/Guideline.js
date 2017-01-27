@@ -166,7 +166,8 @@ Guideline.Guide(name[, options]);
 
     {
         startOnUrl: '/home', // The URL on which the first page resists. Default: null
-        skipAsDefault: true   // Whether or not the guide should initialize as 'skipped'. Meaning you must actively call the guide.start() method to start it. Default: true
+        skipAsDefault: true   // Whether or not the guide should initialize as 'skipped'. Meaning you must actively call the guide.start() method to start it. Default: true,
+        memoizeLasStep: false   // Default: false
     }
 
 #### Events
@@ -244,6 +245,7 @@ Guideline.Guide(name[, options]);
         content: 'This is just...',    // Adds content (text/html) to the step! Not shown if value is 'null'. Default null
         showSkip: true,                // Whether or not to show a 'Skip this step' button. Default: true
         showContinue: false,           // Whether or not to show a 'Continue' button on the step. Default: false
+        showPrevious: false,           // Whether or not to show a 'Previous' button on the step. Default: false
         showAt: '#button',             // Selector for element to 'bubble' or 'overlay'. E.g. 'ul#menu li:first-child'. Can also be a callback function. If a function is provided, it will be polled until the function returns an element. Default: 'document'
         align: 'left middle',          // Determines how the bubble/overlay is aligned. Format '[x] [y]'. X = [left, center, right], Y = [top, middle, bottom]. E.g. 'center middle' or 'right bottom'. Default: 'right bottom'.
         continueWhen: 'click #button', // Condition, when met, automatically continues to the next step on the page. Can be either a string in the format of '[event name] [css selector]', e.g. 'dblclick div#bottom li:last-child'. Can also be a callback function. If a function is provided, it will be polled until the function returns true. When the function returns true, the step continues. Default: 'click [showAt]' (but only if showAt is a string)
@@ -282,3 +284,4 @@ Guideline.Guide(name[, options]);
 * [jQuery](http://jquery.com/) - Used throughout the library. Recommended jQuery version >=1.9.1.
 * [LightShow.js](https://github.com/comfirm/LightShow.js) - Used whenever there is an overlay present.
 * [jquery.scrollTo](https://github.com/flesler/jquery.scrollTo) - Used when scrolling to a certain window position.
+* [jQuery Cookie](https://github.com/carhartl/jquery-cookie)
