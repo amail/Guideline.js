@@ -55,7 +55,6 @@
 
 	Utility.getRelativeElementPosition = function(source, targetElement, xDirective, yDirective){
 		var isSourceWindow = $.isWindow(source.get(0));
-
 		var xPosition = isSourceWindow ? source.scrollLeft() : source.offset().left;
 		var yPosition = isSourceWindow ? source.scrollTop() : source.offset().top;
 
@@ -764,7 +763,7 @@
 		this.content = options.content || null;
 		this.showAtOriginal = options.showAt;
 		this.showAt = options.showAt || "document";
-		this.showSkip = options.showSkip || true;
+		this.showSkip = options.showSkip == undefined || options.showSkip;
 		this.align = options.align || "auto";
 		this.overlayOptions = options.overlayOptions || {};
 		this.scrollToItem = options.scrollToItem || false;
@@ -856,8 +855,8 @@
 	Step.prototype.getContentElements = function(){
 		var outerScope = this;
 		var contentElements = $("<div />");
-
-		if(this.title){
+        
+        if(this.title){
 			var headingLevel = this.type == "overlay" ? 1 : 4;
 			contentElements.append($("<h"+headingLevel+" />").text(this.title));
 		}
@@ -881,7 +880,7 @@
 			contentElements.append(contentElement);
 		}
 
-		if (this.showSkip && this.type != "overlay") {
+		if (this.showSkip) {
 			var skipElement = $('<button type="button" class="gl-skip gl-close" title="Close Guide">&times;</button>');
 			skipElement.click(function(){
 				outerScope.guide.skip();
@@ -969,7 +968,6 @@
 				}
 			}, null);
 		}
-
 		return contentElements;
 	};
 
@@ -980,25 +978,20 @@
 		return this._actor;
 	};
 
-	// OBSOLETE
 	Step.prototype.getOverlay = function(){
-		var outerScope = this;
-
-		var overlayTarget = this.showAt == "window" || this.showAt == "document" ? undefined : $(this.showAt);
-		var contentElement = $("<div />").addClass('gl-overlay').append(this.getContentElements());
-
-		return $.lightShow({
-			overlay: overlayTarget,
-			content: contentElement,
-			callback: {
-				hide: {
-					after: function(){
-						outerScope.changeToNextStep();
-					}
-				}
-			},
-			style: this.overlayOptions.style
-		});
+		_self = this;
+		if(!this._bubble){
+			this._bubble = new Bubble({
+				content: this.getContentElements(),
+				type: this.type,
+				showAt: this.showAt,
+				showAtOriginal: this.showAtOriginal,
+				align: this.align,
+				_parent_emitter: this._emitter,
+				scrollToItem: this.scrollToItem
+			});	
+		}
+		return this._bubble;
 	};
 
 	Step.prototype.getBubble = function(){
@@ -1021,9 +1014,11 @@
 	var Bubble = Guideline.Bubble = function(options){
 		this._visible = false;
 		this._cachedElement = null;
-		this._redraw_position_timer_id = -1;
+		this._cachedContainer = null;
 		this._cachedOverlay = null; // Save reference to overlay
 		this.content = options.content ||null;
+		this.type = options.type ||null;
+		this.showAtOriginal = options.showAtOriginal ||null;
 		this.showAt = options.showAt ||null;
 		this.align = options.align ||null;
 		this._parent_emitter = options._parent_emitter ||null;
@@ -1056,37 +1051,37 @@
 
 	// Decide how we should position the bubble relative to the element
 	Bubble.prototype.positionAt = function(target, align){
-		var outerScope = this;
-
 		target = $(target);
 		var element = this.getElement();
 		
 		var alignment = Bubble.parseAlignment(align);
-		var position = Utility.getRelativeElementPosition(target, element, alignment.x, alignment.y);
 		element.addClass(Bubble.getArrowAlignment(alignment));
-
+        try{
+		    var position = Utility.getRelativeElementPosition(target, element, alignment.x, alignment.y);
 		// If scrollToItem parameter is true
-		if (this.scrollToItem) {
-			if(scroll){
-				if(!$.isWindow(target.get(0))){
-					$.scrollTo(position.y-($(window).outerHeight()/2)+(element.outerHeight()/2), 400);
+			if (this.scrollToItem) {
+				if(scroll){
+					if(!$.isWindow(target.get(0))){
+						$.scrollTo(position.y-($(window).outerHeight()/2)+(element.outerHeight()/2), 400);
+					}
 				}
 			}
-		}
 
-		var redrawPosition;
-		redrawPosition = function(){
-			if(!outerScope._visible){
+			if(!this._visible){
 				return;
 			}
 
 			var position = Utility.getRelativeElementPosition(target, element, alignment.x, alignment.y);
 
-			outerScope.redrawPosition(position.x, position.y);
-			outerScope._redraw_position_timer_id = setTimeout(redrawPosition, 100);
-		};
-
-		redrawPosition();
+			this.redrawPosition(position.x, position.y);
+			if(this.showAtOriginal && this.type == "overlay"){
+				var top = target.offset().top;
+				var left = target.offset().left;
+		        var width = target.outerWidth();
+		        var height = target.outerHeight();
+			    this.redrawHolePosition(top, left, width, height);
+			}
+		}catch(error){}
 	};
 
 	// Draws the element onto a new position. Could possibly animate using delta for smoothness.
@@ -1097,16 +1092,33 @@
 		});
 	};
 
+	Bubble.prototype.redrawHolePosition = function(top, left, width, height){
+		this.getContainer().find('.joyride-hole').css({
+			top, left, width, height
+		});
+	};
+
+    Bubble.prototype.getContainer = function(){
+        this.getElement();
+        return this._cachedContainer
+    };
+
 	Bubble.prototype.getElement = function(){
 		if(!this._cachedElement){
 			var arrow = $("<div />")
 				.addClass("arrow");
 
+			var container = $("<div />")
+
 			var content = this.content ? $("<div />")
 				.addClass("content").html(this.content) : null;
 
-			this._cachedElement = $("<div />")
-				.addClass("gl-bubble")
+			var cachedElement = $("<div />")
+			if(!this.showAtOriginal && this.type == "overlay"){
+				cachedElement.addClass("gl-overlay")
+				.append(content)
+			}else{
+				cachedElement.addClass("gl-bubble")
 				.css({
 					display: "none",
 					position: "absolute",
@@ -1116,32 +1128,27 @@
 				})
 				.append(arrow)
 				.append(content)
-				.appendTo("body");
+			}
+            if(this.type == "overlay"){
+			    container = $('<div class="joyride-overlay" />')
+			    var hole = $('<div />')
+			    container.append(hole)
+			    if(this.showAtOriginal){
+			    	hole.attr('class', 'joyride-hole')
+		        }else{
+		            hole.attr('class', 'joyride-hole-all')
+		        }
+		    }
+
+			container.append(cachedElement)
+			this._cachedElement = cachedElement
+			this._cachedContainer = container
+			this._cachedContainer.appendTo("body");
 		}
 
 		return this._cachedElement;
 	};
 
-
-	// Added new overlay object factory
-	Bubble.prototype.getOverlayElement = function(){
-		// If not created already
-		if(!this._cachedOverlay) {
-			this._cachedOverlay = $("<div />")
-				.addClass("guideline-overlay")
-				.css({
-					display: "none",
-					position: "absolute",
-					left: 0,
-					top: 0,
-					width: "100%",
-					height: "100%"
-				})
-				.appendTo("body");
-		}
-
-		return this._cachedOverlay;
-	};
 
 
 	Bubble.prototype.show = function(){
@@ -1150,6 +1157,7 @@
 		if(!this._visible){
 			this._visible = true;
 			var element = this.getElement();
+			var container = this.getContainer();
 
 			// console.log('Bubble showAt: ' + typeof(outerScope.showAt));
 
@@ -1158,8 +1166,9 @@
 					outerScope.showAt,
 					function(error, result){
 						outerScope.showAt = result;
-						outerScope.positionAt(outerScope.showAt, outerScope.align);
+						container.fadeIn();
 						element.fadeIn();
+						outerScope.positionAt(outerScope.showAt, outerScope.align);
 
 						// Trigger event
 						if (outerScope._parent_emitter) {
@@ -1169,11 +1178,11 @@
 				);
 			}else{
 				Guideline.registerConditionCheck(function(){
-					return $(outerScope.showAt).length > 0;
+					return $(outerScope.showAt).length > 0 || outerScope.showAt === 'document';
 				}, function(error){
-					outerScope.positionAt(outerScope.showAt, outerScope.align);
-
+                    container.fadeIn();
 					element.fadeIn();
+					outerScope.positionAt(outerScope.showAt, outerScope.align);
 				});
 			}
 
@@ -1186,8 +1195,7 @@
 
 		if(this._visible){
 			this._visible = false;
-			clearTimeout(this._redraw_position_timer_id);
-			this.getElement().fadeOut(300, function(){
+			this.getContainer().fadeOut(300, function(){
 				// Trigger event
 				// if (outerScope._parent_emitter) {
 				// 	outerScope._parent_emitter.emit('destroyBubble', this);

@@ -7,17 +7,13 @@ var maypage = simpleGuide.addPage("maypage");
 maypage.addStep({
     type: "overlay",
     title: "My application",
+    showSkip: false,
     content: (
         "<p>This is a simple example with <strong>Guideline.js</strong></p>"+
-        "<button class='btn btn-large btn-primary btn-alpha-blue hide-button'><i class='icon-circle-arrow-right'></i> Amazing... Show me more!</button>"+
+        "<button class='gl-continue btn btn-large btn-primary btn-alpha-blue hide-button'><i class='icon-circle-arrow-right'></i> Amazing... Show me more!</button>"+
         "<br/>"+
         "<a href='#' class='gl-skip'>I don't care. Skip this.</a>"
-    ),
-    overlayOptions: {
-        style: {
-            opacity: 0.7
-        }
-    }
+    )
 });
 
 
@@ -47,6 +43,7 @@ maypage.addStep({
 });
 
 maypage.addStep({
+    type: "overlay",
     title: "Profile!",
     content: (
         "<p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</p>"+
@@ -63,6 +60,7 @@ maypage.addStep({
 
 
 maypage.addStep({
+    type: "overlay",
     title: "Learn more!",
     content: (
         "<p>For more infirmtions.</p>"+
