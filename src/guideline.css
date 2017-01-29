@@ -22,6 +22,8 @@ div.gl-proxy-disclaimer a:link {
     text-align:center;
     position: relative;
     margin-top: 10%;
+    position: fixed;
+    width: 100%;
 }
 .gl-overlay h1 {
     font-size: 3em;
@@ -61,10 +63,7 @@ div.gl-proxy-disclaimer a:link {
 
 .gl-bubble .gl-close,
 .gl-bubble .gl-close:visited,
-.gl-bubble .gl-close:active,
-.gl-overlay .gl-close,
-.gl-overlay .gl-close:visited,
-.gl-overlay .gl-close:active {
+.gl-bubble .gl-close:active {
     position: absolute;
     right: 8px;
     top: 4px;
