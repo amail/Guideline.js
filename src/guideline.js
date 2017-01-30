@@ -448,10 +448,7 @@
 			parentStep.hide();
 		}
 
-		if(previousStep == null){
-			// Write page to begin at
-			Utility.Cookie.set("guideline_"+this.getName(), this.getPageOffset());
-		}else{
+		if(previousStep != null){
 			this.setParentStep(previousStep);
 			previousStep._hasChanged = false;
 			previousStep.show();
@@ -655,7 +652,7 @@
 				// console.log('step title: ' + this._steps[i].title + ' num: ' + i);
 
 				// Replace showAt property with original
-				this._steps[i].showAt = this._steps[i].showAtOriginal || "document";
+				this._steps[i].showAt = this._steps[i].showAtOriginal|| "document";
 			}
 		}
 		

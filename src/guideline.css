@@ -235,3 +235,75 @@ div.gl-proxy-disclaimer a:link {
     box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
     position: absolute;
 }
+
+.tour-indicator {
+  height: 30px;
+  width: 30px;
+  border-radius: 100%;
+  background-color: #3f94d0;
+  cursor: pointer;
+  /* Animate */
+  -webkit-animation-name: pulse;
+  -webkit-animation-duration: 1.5s;
+  -webkit-animation-iteration-count: infinite;
+  /* -webkit-animation-timing-function: ease-out; */
+  -moz-animation-name: pulse;
+  -moz-animation-duration: 1.5s;
+  -moz-animation-iteration-count: infinite;
+  -moz-animation-timing-function: ease-out;
+  -o-animation-name: pulse;
+  -o-animation-duration: 1.5s;
+  -o-animation-iteration-count: infinite;
+  -o-animation-timing-function: ease-out;
+  /* -webkit-animation-name: pulse; */
+  /* animation-name: pulse; */
+  /* -webkit-animation-duration: 1.5s; */
+  /* animation-duration: 1.5s; */
+  /* -webkit-animation-iteration-count: infinite; */
+  /* animation-iteration-count: infinite; */
+  /* -webkit-animation-timing-function: ease-out; */
+  /* animation-timing-function: ease-out; */
+  position: absolute;
+  }
+
+/* WebKit/Safari and Chrome */
+@-webkit-keyframes pulse {
+  /* line 157, /Users/jakemarsh/Desktop/tour-guide-example/app/styles/main.scss */
+  0% {
+    -webkit-transform: scale(1);
+    transform: scale(1); }
+
+  /* line 162, /Users/jakemarsh/Desktop/tour-guide-example/app/styles/main.scss */
+  80% {
+    -webkit-transform: scale(1.5);
+    transform: scale(1.5); }
+
+  /* line 167, /Users/jakemarsh/Desktop/tour-guide-example/app/styles/main.scss */
+  100% {
+    -webkit-transform: scale(2.5);
+    transform: scale(2.5);
+    opacity: 0; } }
+
+/* Gecko/Firefox */
+
+/* Presto/Opera */
+
+/* Standard */
+@keyframes pulse {
+  /* line 215, /Users/jakemarsh/Desktop/tour-guide-example/app/styles/main.scss */
+  0% {
+    -webkit-transform: scale(0.3);
+            transform: scale(0.3);
+    opacity: 0.7; }
+
+  /* line 220, /Users/jakemarsh/Desktop/tour-guide-example/app/styles/main.scss */
+  80% {
+    -webkit-transform: scale(1.5);
+            transform: scale(1.5);
+    opacity: 0.2; }
+
+  /* line 225, /Users/jakemarsh/Desktop/tour-guide-example/app/styles/main.scss */
+  100% {
+    -webkit-transform: scale(2.5);
+            transform: scale(2.5);
+    opacity: 0; } }
