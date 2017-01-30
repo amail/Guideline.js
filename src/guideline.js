@@ -655,7 +655,7 @@
 				// console.log('step title: ' + this._steps[i].title + ' num: ' + i);
 
 				// Replace showAt property with original
-				this._steps[i].showAt = this._steps[i].showAtOriginal;
+				this._steps[i].showAt = this._steps[i].showAtOriginal || "document";
 			}
 		}
 		
