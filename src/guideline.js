@@ -371,6 +371,12 @@
 		return this._pages[offset];
 	};
 
+
+	Guide.prototype.getPageByName = function(name){
+        var pages = this._pages.filter(function(p){return p.getName() == name;});
+        return pages? pages[0]: null;
+	};
+
 	Guide.prototype.changeToNextPage = function(){
 		var nextPage = this.getNextPage();
 		
@@ -682,14 +688,17 @@
 
 	// Step
 
-	Page.prototype.addStep = function(options){
-		options = options || {};
-		options.guide = this.guide;
-		
-		var step = new Guideline.Step(options);
-		this._steps.push(step);
+	Page.prototype.addStep = function(options, condition){
+		if(condition == undefined || condition()){
+			options = options || {};
+			options.guide = this.guide;
+			
+			var step = new Guideline.Step(options);
+			this._steps.push(step);
 
-		return step;
+			return step;
+		}
+		return null
 	};
 
 	// Remove steps
@@ -769,6 +778,7 @@
 		this.previousHtml = options.previousHtml || null;
 		this.stepControlContainer = options.stepControlContainer || null;
 		this.continueAfter = options.continueAfter || 0;
+		this.showAfter = options.showAfter || 0;
 		this.showContinue = options.showContinue === true;
 		this.showPrevious = options.showPrevious === true;
 
@@ -795,22 +805,23 @@
 
 	Step.prototype.show = function(){
 		var outerScope = this;
-
 		var wasHidden = !this._visible;
-		this._visible = true;
+		setTimeout(function(){
+			outerScope._visible = true;
 
-		if(wasHidden){
-			this._emitter.emit('show', this);
+			if(wasHidden){
+				outerScope._emitter.emit('show', this);
 
-			this.getActor().show();
+				outerScope.getActor().show();
 
-			if(this.continueAfter){
-				this._hideTimeout = setTimeout(
-					function(){ outerScope.changeToNextStep(); },
-					this.continueAfter*1000
-				);
+				if(outerScope.continueAfter){
+					outerScope._hideTimeout = setTimeout(
+						function(){ outerScope.changeToNextStep(); },
+						outerScope.continueAfter*1000
+					);
+				}
 			}
-		}
+		}, this.showAfter*1000)
 	};
 
 	Step.prototype.hide = function(){
@@ -854,8 +865,8 @@
 		var contentElements = $("<div />");
         
         if(this.title){
-			var headingLevel = this.type == "overlay" ? 1 : 4;
-			contentElements.append($("<h"+headingLevel+" />").text(this.title));
+			var headingLevel = !this.showAtOriginal && this.type == "overlay" ? 1 : 2;
+			contentElements.append($("<h"+headingLevel+" />").html(this.title));
 		}
 
 		if(this.content){
@@ -872,6 +883,10 @@
 			$(".gl-skip", contentElement).click(function(){
 				outerScope.guide.skip();
 				return false;
+			});
+
+			$(".gl-target-click", contentElement).click(function(){
+				$(outerScope.showAt).click();
 			});
 
 			contentElements.append(contentElement);
@@ -1054,22 +1069,11 @@
 		var alignment = Bubble.parseAlignment(align);
 		element.addClass(Bubble.getArrowAlignment(alignment));
         try{
-		    var position = Utility.getRelativeElementPosition(target, element, alignment.x, alignment.y);
-		// If scrollToItem parameter is true
-			if (this.scrollToItem) {
-				if(scroll){
-					if(!$.isWindow(target.get(0))){
-						$.scrollTo(position.y-($(window).outerHeight()/2)+(element.outerHeight()/2), 400);
-					}
-				}
-			}
-
 			if(!this._visible){
 				return;
 			}
 
 			var position = Utility.getRelativeElementPosition(target, element, alignment.x, alignment.y);
-
 			this.redrawPosition(position.x, position.y);
 			if(this.showAtOriginal && this.type == "overlay"){
 				var top = target.offset().top;
@@ -1078,12 +1082,33 @@
 		        var height = target.outerHeight();
 			    this.redrawHolePosition(top, left, width, height);
 			}
+		    // If scrollToItem parameter is true
+			if (this.scrollToItem) {
+				if(scroll){
+					if(!$.isWindow(target.get(0))){
+						$('html,body').animate({scrollTop:position.y-element.outerHeight()}, 'slow');
+					}
+				}
+			}
 		}catch(error){}
 	};
 
 	// Draws the element onto a new position. Could possibly animate using delta for smoothness.
 	Bubble.prototype.redrawPosition = function(left, top){
-		this.getElement().css({
+		var element = this.getElement();
+		if(top<0){
+			element.find('.arrow').first().css({
+	            top: '10%'
+	        });
+        }
+        top = top < 0 ? 0: top;
+        if(left<0){
+			element.find('.arrow').first().css({
+	            left: '10%'
+	        });
+        }
+        left = left < 0 ? 0: left;
+		element.css({
 			left: left,
 			top: top
 		});
@@ -1108,11 +1133,12 @@
 			var container = $("<div />")
 
 			var content = this.content ? $("<div />")
-				.addClass("content").html(this.content) : null;
+				.addClass("content ").html(this.content) : null;
 
 			var cachedElement = $("<div />")
 			if(!this.showAtOriginal && this.type == "overlay"){
-				cachedElement.addClass("gl-overlay")
+                content.addClass('col-md-6 col-md-offset-3')
+				cachedElement.addClass("gl-overlay row")
 				.append(content)
 			}else{
 				cachedElement.addClass("gl-bubble")

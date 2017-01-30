@@ -32,9 +32,7 @@ div.gl-proxy-disclaimer a:link {
 }
 .gl-overlay p {
     margin-bottom: 30px;
-    font-size: 19px;
-    line-height: 25px;
-    font-size: 2em;
+    font-size: 20px;
 }
 .gl-overlay .btn.btn-alpha-blue.btn-large {
     padding: 5px 46px;
@@ -79,10 +77,11 @@ div.gl-proxy-disclaimer a:link {
 }
 
 .gl-bubble h2 {
-        font-size: 16px;
+    font-size: 20px;
     padding: 0;
     margin: 0;
     line-height: 20px;
+    font-weight: bold;
 }
 
 .gl-bubble h2 + div {
@@ -206,6 +205,11 @@ div.gl-proxy-disclaimer a:link {
     border-right-width: 0;
 }
 
+.gl-target-click{
+    color: #e66a11;
+    cursor: pointer;
+}
+
 .step-control-container{
     float: right;
 }
@@ -221,18 +225,18 @@ div.gl-proxy-disclaimer a:link {
     position: absolute;
     right: 0;
     top: 0;
-    z-index: 1500;
+    z-index: 2500;
 }
 
 .joyride-hole {
     border-radius: 4px;
-    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7), 0 0 15px rgba(0, 0, 0, 0.5);
     position: absolute;
 }
 
 .joyride-hole-all {
     border-radius: 4px;
-    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7);
     position: absolute;
 }
 
