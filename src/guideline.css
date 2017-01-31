@@ -311,3 +311,10 @@ div.gl-proxy-disclaimer a:link {
     -webkit-transform: scale(2.5);
             transform: scale(2.5);
     opacity: 0; } }
+
+
+@media (max-width: 767px) {
+  .gl-overlay {
+    margin-top: 0px !important;
+  }
+}
