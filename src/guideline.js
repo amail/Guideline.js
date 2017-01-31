@@ -411,13 +411,12 @@
 		}
 
 		if(nextStep == null){
+			// Write page to begin at
+			Utility.Cookie.set("guideline_"+this.getName(), this.getPageOffset());
 			// Is this the last page? If so, the guide is complete!
 			if(this.getNextPage() == null){
 				this._emitter.emit('complete', this);
 			}
-
-			// Write page to begin at
-			Utility.Cookie.set("guideline_"+this.getName(), this.getPageOffset());
 		}else{
 			this.setParentStep(nextStep);
 			nextStep.show();
@@ -692,6 +691,7 @@
 		if(condition == undefined || condition()){
 			options = options || {};
 			options.guide = this.guide;
+			options.page = this;
 			
 			var step = new Guideline.Step(options);
 			this._steps.push(step);
@@ -765,6 +765,7 @@
 
 		this.type = options.type || 'bubble';
 		this.guide = options.guide || null;
+		this.page = options.page || null;
 		this.title = options.title || null;
 		this.content = options.content || null;
 		this.showAtOriginal = options.showAt;
@@ -805,12 +806,12 @@
 
 	Step.prototype.show = function(){
 		var outerScope = this;
-		var wasHidden = !this._visible;
 		setTimeout(function(){
+            var wasHidden = !outerScope._visible;
 			outerScope._visible = true;
 
 			if(wasHidden){
-				outerScope._emitter.emit('show', this);
+				outerScope._emitter.emit('show', outerScope);
 
 				outerScope.getActor().show();
 

@@ -1,44 +1,44 @@
 /*GitHub proxy*/
 
 div.gl-proxy-disclaimer {
-    background-color: red;
-    color: #fff;
-    padding: 5px;
-    text-align: center;
-    font-weight: bold;
+  background-color: red;
+  color: #fff;
+  padding: 5px;
+  text-align: center;
+  font-weight: bold;
 }
 
 div.gl-proxy-disclaimer a,
 div.gl-proxy-disclaimer a:visited,
 div.gl-proxy-disclaimer a:link {
-    color: #fff;
-    text-decoration: underline;
+  color: #fff;
+  text-decoration: underline;
 }
 
 /*Guideline Bubble*/
 
 .gl-overlay {
-    color: white;
-    text-align:center;
+  color: white;
+  text-align:center;
     position: relative;
     margin-top: 10%;
     position: fixed;
     width: 100%;
 }
 .gl-overlay h1 {
-    font-size: 3em;
-    font-weight: 600;
-    margin-bottom: 18px;
+  font-size: 3em;
+  font-weight: 600;
+  margin-bottom: 18px;
 }
 .gl-overlay p {
-    margin-bottom: 30px;
-    font-size: 20px;
+  margin-bottom: 30px;
+  font-size: 20px;
 }
 .gl-overlay .btn.btn-alpha-blue.btn-large {
-    padding: 5px 46px;
-    margin-bottom: 13px;
-    font-size: 20px;
-    font-weight: 600;
+  padding: 5px 46px;
+  margin-bottom: 13px;
+  font-size: 20px;
+  font-weight: 600;
 }
 
 .gl-overlay a, .gl-overlay a:hover, .gl-overlay a:visited {
@@ -56,13 +56,13 @@ div.gl-proxy-disclaimer a:link {
 }
 
 .gl-bubble .content {
-    padding: 10px;
+  padding: 10px;
 }
 
 .gl-bubble .gl-close,
 .gl-bubble .gl-close:visited,
 .gl-bubble .gl-close:active {
-    position: absolute;
+  position: absolute;
     right: 8px;
     top: 4px;
     font-weight: bold;
@@ -72,8 +72,8 @@ div.gl-proxy-disclaimer a:link {
     border: none;
 }
 .gl-bubble .gl-close:hover {
-    text-decoration: none;
-    color: #d09001;
+  text-decoration: none;
+  color: #d09001;
 }
 
 .gl-bubble h2 {
@@ -85,15 +85,15 @@ div.gl-proxy-disclaimer a:link {
 }
 
 .gl-bubble h2 + div {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 .gl-bubble .btn.btn-alpha-blue {
-    background: #BBB;
-    margin-top: 17px;
+  background: #BBB;
+  margin-top: 17px;
 }
 .gl-bubble .btn.btn-alpha-blue:hover {
-    background: #999;
+  background: #999;
 }
 
 .gl-bubble .progress-bar {
