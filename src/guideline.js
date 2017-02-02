@@ -22,6 +22,16 @@
 	    handlers.splice(0, 0, handler);
 	};
 
+	// Remove attached handler
+	Utility.removeHandler = function(selector, eventName, callback) {
+
+		var element = $(selector).off(eventName, callback)[0];
+		var safeEventName = eventName.split('.')[0].split(' ')[0];
+		// if( $._data(element, 'events')[safeEventName] ){
+		// 	console.log('event found in jquery ._data');
+		// }
+	}
+
 	// Parse an event 
 	Utility.parseEvent = function(rawEvent){
 		var data = {};
@@ -45,7 +55,6 @@
 
 	Utility.getRelativeElementPosition = function(source, targetElement, xDirective, yDirective){
 		var isSourceWindow = $.isWindow(source.get(0));
-
 		var xPosition = isSourceWindow ? source.scrollLeft() : source.offset().left;
 		var yPosition = isSourceWindow ? source.scrollTop() : source.offset().top;
 
@@ -97,6 +106,10 @@
 			}
 		}
 
+		// Add rounding
+		xPosition = Number(Math.round(xPosition));
+		yPosition = Number(Math.round(yPosition));
+
 		return {
 			'x': xPosition,
 			'y': yPosition
@@ -109,38 +122,12 @@
 	Utility.Cookie = {};
 
 	Utility.Cookie.get = function(name){
-		var cookies = {};
-		var decodeComponent = decodeURIComponent;
-		var data = (document.cookie || "").split("; ");
-
-		for(var i=0;i<data.length;++i){
-			var segments = data[i].split("=", 2);
-			if(segments.length == 2){
-				cookies[decodeComponent(segments[0])] = decodeComponent(segments[1]);
-			}
-		}
-
-		return (name === undefined ? cookies : (name in cookies ? cookies[name] : null));
+		return $.cookie(name);
 	};
 
 	Utility.Cookie.set = function(name, value, expires, path){
-		var variables = {};
-		var encodeComponent = encodeURIComponent;
-
-		variables[name] = value == undefined || value == null ? '' : value;
-		variables['path'] = path || '/';
-
-		if(expires && expires.toGMTString){
-			variables["expires"] = expires.toGMTString();
-		}
-
-		var cookie = "";
-
-		for(var key in variables){
-			cookie += (cookie != "" ? "; " : "") + encodeComponent(key) + "=" + encodeComponent(variables[key]);
-		}
-
-		document.cookie = cookie;
+		path = path || '/';
+		$.cookie(name, value, {path, expires});
 	};
 
 	Utility.Cookie.remove = function(name){
@@ -278,6 +265,7 @@
 		if(!this._polling){
 			this._polling = true;
 
+			// Create new queue
 			var items = [];
 			var outerScope = this;
 			var currentTime = new Date().getTime();
@@ -313,6 +301,7 @@
 
 		this._pages = [];
 		this._emitter = new EventEmitter();
+		this.memoizeLasStep = options.memoizeLasStep || false;
 
 		this.setName(name);
 		this.setStartOnUrl(options.startOnUrl);
@@ -382,6 +371,12 @@
 		return this._pages[offset];
 	};
 
+
+	Guide.prototype.getPageByName = function(name){
+        var pages = this._pages.filter(function(p){return p.getName() == name;});
+        return pages? pages[0]: null;
+	};
+
 	Guide.prototype.changeToNextPage = function(){
 		var nextPage = this.getNextPage();
 		
@@ -391,10 +386,17 @@
 			this._steps = this.getPage().getSteps();
 		}
 
-		this.changeToNextStep();
 	};
 
 	// Step
+    
+    Guide.prototype.saveStep = function(step){
+        if(this.memoizeLasStep){
+            var stepOffset = this.getStepOffset();
+            if(step === null){++stepOffset;}
+            Utility.Cookie.set("guideline_"+this.getName()+"_"+Guideline._currentPage, stepOffset);
+        }
+    };
 
 	Guide.prototype.changeToNextStep = function(){
 		var parentStep = this.getParentStep();
@@ -409,21 +411,67 @@
 		}
 
 		if(nextStep == null){
+			// Write page to begin at
+			Utility.Cookie.set("guideline_"+this.getName(), this.getPageOffset());
 			// Is this the last page? If so, the guide is complete!
 			if(this.getNextPage() == null){
 				this._emitter.emit('complete', this);
 			}
-
-			// Write page to begin at
-			Utility.Cookie.set("guideline_"+this.getName(), this.getPageOffset());
 		}else{
 			this.setParentStep(nextStep);
 			nextStep.show();
+		}
+		return nextStep
+	};
+
+    Guide.prototype.goToStep = function(step){
+        if(step){
+            var step_id = 0;
+            var parentStep = this.getParentStep();
+            if(parentStep){parentStep.hide();}
+            while(step_id < step){
+                var nextStep = this.getNextStep();
+                this.incrementStepOffset();
+                if(nextStep){
+                    this.setParentStep(nextStep);
+                    nextStep.hide();
+                }
+                step_id+=1;
+            }
+        }
+    };
+
+	Guide.prototype.changeToPreviousStep = function(){
+		var parentStep = this.getParentStep();
+
+		var previousStep = this.getPreviousStep();
+		this.decrementStepOffset();
+		
+		if(parentStep == null){
+			this._emitter.emit('start', this);
+		}else{	
+			parentStep.hide();
+		}
+
+		if(previousStep != null){
+			this.setParentStep(previousStep);
+			previousStep._hasChanged = false;
+			previousStep.show();
 		}
 	};
 
 	Guide.prototype.getNextStep = function(){
 		var stepOffset = this.getStepOffset()+1;
+
+		if(stepOffset >= 0 && stepOffset <= this._steps.length-1){
+			return this.getStep(stepOffset);
+		}
+
+		return null;
+	};
+
+	Guide.prototype.getPreviousStep = function(){
+		var stepOffset = this.getStepOffset()-1;
 
 		if(stepOffset >= 0 && stepOffset <= this._steps.length-1){
 			return this.getStep(stepOffset);
@@ -444,11 +492,11 @@
 	Guide.prototype.getPageOffset = function(){
 		var storedPageOffset = parseInt(Utility.Cookie.get("guideline_"+this.getName()));
 
-		if(this._pageOffset == -1 && storedPageOffset >= -1){
+        if(this._pageOffset == -1 && storedPageOffset >= -1){
 			this._pageOffset = parseInt(storedPageOffset);
 		}
 
-		return this._pageOffset;
+        return this._pageOffset;
 	};
 
 	Guide.prototype.setPageOffset = function(offset){
@@ -472,6 +520,11 @@
 
 	Guide.prototype.incrementStepOffset = function(){
 		++this._stepOffset;
+		return this._stepOffset;
+	};
+
+	Guide.prototype.decrementStepOffset = function(){
+		--this._stepOffset;
 		return this._stepOffset;
 	};
 
@@ -517,11 +570,17 @@
 			}
 		}	
 
-		var nextPage = this.getNextPage();
+        var nextPage = this.getNextPage();
 
 		if(nextPage != null){
-			if(nextPage.getName() == pageName && (this.getStepOffset() == -1 || this.isLastStepOffset())){
+			if(nextPage.getName() == pageName && (this.getStepOffset() >= -1 || this.isLastStepOffset())){
 				this.changeToNextPage();
+				if(this.memoizeLasStep){
+					var current_step = Utility.Cookie.get("guideline_"+this.getName()+"_"+Guideline._currentPage);
+					current_step = parseInt(current_step);
+					this.goToStep(current_step);
+				}
+				this.changeToNextStep()
 			}else if(this.getPageOffset() != -1){
 				this.skip();
 			}
@@ -588,6 +647,20 @@
 	};
 
 	Guide.prototype.reset = function(){
+		/**
+		 * Iterate steps and reset _hasChanged
+		 * FIXES broken 'continue' buttons when tour restarted
+		 */
+		if (this._steps) {
+			for(var i=0;i<this._steps.length;++i){
+				this._steps[i]._hasChanged = false;
+				// console.log('step title: ' + this._steps[i].title + ' num: ' + i);
+
+				// Replace showAt property with original
+				this._steps[i].showAt = this._steps[i].showAtOriginal|| "document";
+			}
+		}
+		
 		this._steps = [];
 		this.setStarted(false);
 		this.setParentStep(null);
@@ -614,19 +687,62 @@
 
 	// Step
 
-	Page.prototype.addStep = function(options){
-		options = options || {};
-		options.guide = this.guide;
-		
-		var step = new Guideline.Step(options);
-		this._steps.push(step);
+	Page.prototype.addStep = function(options, condition){
+		if(condition == undefined || condition()){
+			options = options || {};
+			options.guide = this.guide;
+			options.page = this;
+			
+			var step = new Guideline.Step(options);
+			this._steps.push(step);
 
-		return step;
+			return step;
+		}
+		return null
 	};
+
+	// Remove steps
+	Guide.prototype.removeSteps = function(options){
+
+		// console.log('Guide.this._steps: ' + this._steps.length );
+
+		// Remove steps from page
+		var pageSteps = this.getPage().getSteps();
+		// console.log('Page.this._steps: ' + pageSteps.length );
+
+		// Iterate steps
+		for(var i=0;i<this._steps.length;++i){
+			// If not null
+			if(this._steps[i] != null && pageSteps[i] != null) {
+
+				// console.log('step[i]: ' + i);
+
+				// Remove continueWhen event listeners
+				// console.log('selector: ' + this._steps[i]._event_selector_name + ' eventname: ' + this._steps[i]._event_event_name + ' callback: ' + this._steps[i]._event_callback_function);
+				if( typeof(this._steps[i].continueWhen) == 'function' ) {
+					Utility.removeHandler(this._steps[i]._event_selector_name, this._steps[i]._event_event_name, this._steps[i]._event_callback_function);
+					Utility.removeHandler(pageSteps[i]._event_selector_name, pageSteps[i]._event_event_name, pageSteps[i]._event_callback_function);
+					// console.log('RS - continueWhen function');
+				}
+
+				// Remove showAt event listeners
+				if( typeof(this._steps[i].showAt) == 'function' ) {
+					// console.log('RS - showAt function');
+				}
+
+				this._steps[i] = pageSteps[i] = null;
+			}
+		};
+		this._steps = pageSteps = [];
+
+		// console.log('Guide.this._steps: ' + this._steps.length );
+		// console.log('Page.this._steps: ' + pageSteps.length );
+	};
+
 
 	Page.prototype.getStep = function(offset){
 		return offset < this._steps.length ? this._steps[offset] : null;
-	}
+	};
 
 	Page.prototype.getSteps = function(){
 		return this._steps;
@@ -643,19 +759,29 @@
 		this._progressBar = null;
 		this._bubble = null;
 		this._emitter = new EventEmitter();
+		this._event_selector_name = null;
+		this._event_event_name = null;
+		this._event_callback_function = null;
 
 		this.type = options.type || 'bubble';
 		this.guide = options.guide || null;
+		this.page = options.page || null;
 		this.title = options.title || null;
 		this.content = options.content || null;
+		this.showAtOriginal = options.showAt;
 		this.showAt = options.showAt || "document";
-		this.showSkip = options.showSkip || true;
+		this.showSkip = options.showSkip == undefined || options.showSkip;
 		this.align = options.align || "auto";
 		this.overlayOptions = options.overlayOptions || {};
+		this.scrollToItem = options.scrollToItem || false;
 		
 		this.continueHtml = options.continueHtml || null;
+		this.previousHtml = options.previousHtml || null;
+		this.stepControlContainer = options.stepControlContainer || null;
 		this.continueAfter = options.continueAfter || 0;
+		this.showAfter = options.showAfter || 0;
 		this.showContinue = options.showContinue === true;
+		this.showPrevious = options.showPrevious === true;
 
 		if(options.continueWhen !== undefined && typeof (options.continueWhen) != 'string'){
 			this.continueWhen = options.continueWhen;
@@ -666,6 +792,11 @@
 
 			this.continueWhen = options.continueWhen ? Utility.parseEvent(options.continueWhen) : null;
 		}
+
+		// Add cleanup listener
+		this._emitter.on('destroyBubble', function() {
+            _self._bubble = null;
+        });
 	};
 
 	Step.prototype.on = function(event, handler){
@@ -675,22 +806,23 @@
 
 	Step.prototype.show = function(){
 		var outerScope = this;
+		setTimeout(function(){
+            var wasHidden = !outerScope._visible;
+			outerScope._visible = true;
 
-		var wasHidden = !this._visible;
-		this._visible = true;
+			if(wasHidden){
+				outerScope._emitter.emit('show', outerScope);
 
-		if(wasHidden){
-			this._emitter.emit('show', this);
+				outerScope.getActor().show();
 
-			this.getActor().show();
-
-			if(this.continueAfter){
-				this._hideTimeout = setTimeout(
-					function(){ outerScope.changeToNextStep(); },
-					this.continueAfter*1000
-				);
+				if(outerScope.continueAfter){
+					outerScope._hideTimeout = setTimeout(
+						function(){ outerScope.changeToNextStep(); },
+						outerScope.continueAfter*1000
+					);
+				}
 			}
-		}
+		}, this.showAfter*1000)
 	};
 
 	Step.prototype.hide = function(){
@@ -715,7 +847,16 @@
 		if(!this._hasChanged && this._visible){
 			this._hasChanged = true;
 			if(this.guide){
-				this.guide.changeToNextStep();
+				this.guide.saveStep(this.guide.changeToNextStep());
+			}
+		}
+	};
+
+	Step.prototype.changeToPreviousStep = function(){
+		if(!this._hasChanged && this._visible){
+			this._hasChanged = false;
+			if(this.guide){
+				this.guide.changeToPreviousStep();
 			}
 		}
 	};
@@ -723,10 +864,10 @@
 	Step.prototype.getContentElements = function(){
 		var outerScope = this;
 		var contentElements = $("<div />");
-
-		if(this.title){
-			var headingLevel = this.type == "overlay" ? 1 : 2;
-			contentElements.append($("<h"+headingLevel+" />").text(this.title));
+        
+        if(this.title){
+			var headingLevel = !this.showAtOriginal && this.type == "overlay" ? 1 : 2;
+			contentElements.append($("<h"+headingLevel+" />").html(this.title));
 		}
 
 		if(this.content){
@@ -736,21 +877,56 @@
 				outerScope.changeToNextStep();
 			});
 
+			$(".gl-previous", contentElement).click(function(){
+				outerScope.changeToPreviousStep();
+			});
+
 			$(".gl-skip", contentElement).click(function(){
 				outerScope.guide.skip();
 				return false;
 			});
 
+			$(".gl-target-click", contentElement).click(function(){
+				$(outerScope.showAt).click();
+			});
+
 			contentElements.append(contentElement);
 		}
 
-		if (this.showSkip && this.type != "overlay") {
-			var skipElement = $('<a href="#" class="gl-skip gl-close" title="Close Guide">&times;</a>');
+		if (this.showSkip) {
+			var skipElement = $('<button type="button" class="gl-skip gl-close" title="Close Guide">&times;</button>');
 			skipElement.click(function(){
 				outerScope.guide.skip();
 				return false;
 			});
 			contentElements.append(skipElement);
+		}
+        
+        var stepControlContainer;
+        if(this.showPrevious || this.showContinue){
+            if (typeof(this.stepControlContainer) === "string") {
+				stepControlContainer = $(this.stepControlContainer);
+			} else {
+				stepControlContainer = $("<div class='step-control-container' />");
+			}
+            contentElements.append(stepControlContainer);
+        }
+
+		if(this.showPrevious){
+			var previousElement;
+			
+			if (typeof(this.previousHtml) === "string") {
+				previousElement = $(this.previousHtml);
+			} else {
+				previousElement = $("<a />").attr("href", "#").text("Previous");
+			}
+			
+			stepControlContainer.append(
+				previousElement.click(function(){
+					outerScope.changeToPreviousStep();
+					return false;
+				})
+			);
 		}
 
 		if(this.showContinue){
@@ -762,9 +938,10 @@
 				continueElement = $("<a />").attr("href", "#").text("Continue");
 			}
 			
-			contentElements.append(
+			stepControlContainer.append(
 				continueElement.click(function(){
-					outerScope.changeToNextStep();
+					var next_step = outerScope.changeToNextStep();
+					
 					return false;
 				})
 			);
@@ -793,15 +970,17 @@
 						if(isEventFunction){
 							outerScope.changeToNextStep();
 						}else{
-							Utility.attachOnFirst(event.selector, event.name, function(){
+							Utility.attachOnFirst(event.selector, event.name, function matchCallback(){
 								outerScope.changeToNextStep();
 							});
+							outerScope._event_selector_name = event.selector;
+							outerScope._event_event_name = event.name;
+							outerScope._event_callback_function = function matchCallback(){ outerScope.changeToNextStep(); };
 						}
 					});
 				}
 			}, null);
 		}
-
 		return contentElements;
 	};
 
@@ -813,32 +992,32 @@
 	};
 
 	Step.prototype.getOverlay = function(){
-		var outerScope = this;
-
-		var overlayTarget = this.showAt == "window" || this.showAt == "document" ? undefined : $(this.showAt);
-		var contentElement = $("<div />").addClass('gl-overlay').append(this.getContentElements());
-
-		return $.lightShow({
-			overlay: overlayTarget,
-			content: contentElement,
-			callback: {
-				hide: {
-					after: function(){
-						outerScope.changeToNextStep();
-					}
-				}
-			},
-			style: this.overlayOptions.style
-		});
+		_self = this;
+		if(!this._bubble){
+			this._bubble = new Bubble({
+				content: this.getContentElements(),
+				type: this.type,
+				showAt: this.showAt,
+				showAtOriginal: this.showAtOriginal,
+				align: this.align,
+				_parent_emitter: this._emitter,
+				scrollToItem: this.scrollToItem
+			});	
+		}
+		return this._bubble;
 	};
 
 	Step.prototype.getBubble = function(){
+		_self = this;
+
 		if(!this._bubble){
 			this._bubble = new Bubble({
 				content: this.getContentElements(),
 				showAt: this.showAt,
-				align: this.align
-			});
+				align: this.align,
+				_parent_emitter: this._emitter,
+				scrollToItem: this.scrollToItem
+			});	
 		}
 		return this._bubble;
 	};
@@ -848,10 +1027,15 @@
 	var Bubble = Guideline.Bubble = function(options){
 		this._visible = false;
 		this._cachedElement = null;
-		this._redraw_position_timer_id = -1;
+		this._cachedContainer = null;
+		this._cachedOverlay = null; // Save reference to overlay
 		this.content = options.content ||null;
+		this.type = options.type ||null;
+		this.showAtOriginal = options.showAtOriginal ||null;
 		this.showAt = options.showAt ||null;
 		this.align = options.align ||null;
+		this._parent_emitter = options._parent_emitter ||null;
+		this.scrollToItem = options.scrollToItem;
 	};
 
 	Bubble.parseAlignment = function(alignment){
@@ -880,54 +1064,85 @@
 
 	// Decide how we should position the bubble relative to the element
 	Bubble.prototype.positionAt = function(target, align){
-		var outerScope = this;
-
 		target = $(target);
 		var element = this.getElement();
 		
 		var alignment = Bubble.parseAlignment(align);
-		var position = Utility.getRelativeElementPosition(target, element, alignment.x, alignment.y);
 		element.addClass(Bubble.getArrowAlignment(alignment));
-
-		if(scroll){
-			if(!$.isWindow(target.get(0))){
-				$.scrollTo(position.y-($(window).outerHeight()/2)+(element.outerHeight()/2), 400);
-			}
-		}
-
-		var redrawPosition;
-		redrawPosition = function(){
-			if(!outerScope._visible){
+        try{
+			if(!this._visible){
 				return;
 			}
 
 			var position = Utility.getRelativeElementPosition(target, element, alignment.x, alignment.y);
-
-			outerScope.redrawPosition(position.x, position.y);
-			outerScope._redraw_position_timer_id = setTimeout(redrawPosition, 100);
-		};
-
-		redrawPosition();
+			this.redrawPosition(position.x, position.y);
+			if(this.showAtOriginal && this.type == "overlay"){
+				var top = target.offset().top;
+				var left = target.offset().left;
+		        var width = target.outerWidth();
+		        var height = target.outerHeight();
+			    this.redrawHolePosition(top, left, width, height);
+			}
+		    // If scrollToItem parameter is true
+			if (this.scrollToItem) {
+				if(scroll){
+					if(!$.isWindow(target.get(0))){
+						$('html,body').animate({scrollTop:position.y-element.outerHeight()}, 'slow');
+					}
+				}
+			}
+		}catch(error){}
 	};
 
 	// Draws the element onto a new position. Could possibly animate using delta for smoothness.
 	Bubble.prototype.redrawPosition = function(left, top){
-		this.getElement().css({
+		var element = this.getElement();
+		if(top<0){
+			element.find('.arrow').first().css({
+	            top: '10%'
+	        });
+        }
+        top = top < 0 ? 0: top;
+        if(left<0){
+			element.find('.arrow').first().css({
+	            left: '10%'
+	        });
+        }
+        left = left < 0 ? 0: left;
+		element.css({
 			left: left,
 			top: top
 		});
 	};
+
+	Bubble.prototype.redrawHolePosition = function(top, left, width, height){
+		this.getContainer().find('.joyride-hole').css({
+			top, left, width, height
+		});
+	};
+
+    Bubble.prototype.getContainer = function(){
+        this.getElement();
+        return this._cachedContainer
+    };
 
 	Bubble.prototype.getElement = function(){
 		if(!this._cachedElement){
 			var arrow = $("<div />")
 				.addClass("arrow");
 
-			var content = this.content ? $("<div />")
-				.addClass("content").html(this.content) : null;
+			var container = $("<div />")
 
-			this._cachedElement = $("<div />")
-				.addClass("gl-bubble")
+			var content = this.content ? $("<div />")
+				.addClass("content ").html(this.content) : null;
+
+			var cachedElement = $("<div />")
+			if(!this.showAtOriginal && this.type == "overlay"){
+                content.addClass('col-md-6 col-md-offset-3')
+				cachedElement.addClass("gl-overlay row")
+				.append(content)
+			}else{
+				cachedElement.addClass("gl-bubble")
 				.css({
 					display: "none",
 					position: "absolute",
@@ -937,11 +1152,28 @@
 				})
 				.append(arrow)
 				.append(content)
-				.appendTo("body");
+			}
+            if(this.type == "overlay"){
+			    container = $('<div class="joyride-overlay" />')
+			    var hole = $('<div />')
+			    container.append(hole)
+			    if(this.showAtOriginal){
+			    	hole.attr('class', 'joyride-hole')
+		        }else{
+		            hole.attr('class', 'joyride-hole-all')
+		        }
+		    }
+
+			container.append(cachedElement)
+			this._cachedElement = cachedElement
+			this._cachedContainer = container
+			this._cachedContainer.appendTo("body");
 		}
 
 		return this._cachedElement;
 	};
+
+
 
 	Bubble.prototype.show = function(){
 		var outerScope = this;
@@ -949,22 +1181,32 @@
 		if(!this._visible){
 			this._visible = true;
 			var element = this.getElement();
+			var container = this.getContainer();
+
+			// console.log('Bubble showAt: ' + typeof(outerScope.showAt));
 
 			if(typeof(outerScope.showAt) == 'function'){
 				Guideline.registerConditionCheck(
 					outerScope.showAt,
 					function(error, result){
 						outerScope.showAt = result;
-						outerScope.positionAt(outerScope.showAt, outerScope.align);
+						container.fadeIn();
 						element.fadeIn();
+						outerScope.positionAt(outerScope.showAt, outerScope.align);
+
+						// Trigger event
+						if (outerScope._parent_emitter) {
+							outerScope._parent_emitter.emit('showAtConditionSatisfied', this);
+						}
 					}
 				);
 			}else{
 				Guideline.registerConditionCheck(function(){
-					return $(outerScope.showAt).length > 0;
+					return $(outerScope.showAt).length > 0 || outerScope.showAt === 'document';
 				}, function(error){
-					outerScope.positionAt(outerScope.showAt, outerScope.align);
+                    container.fadeIn();
 					element.fadeIn();
+					outerScope.positionAt(outerScope.showAt, outerScope.align);
 				});
 			}
 
@@ -973,10 +1215,16 @@
 	};
 
 	Bubble.prototype.hide = function(){
+		var outerScope = this;
+
 		if(this._visible){
 			this._visible = false;
-			clearTimeout(this._redraw_position_timer_id);
-			this.getElement().fadeOut();
+			this.getContainer().fadeOut(300, function(){
+				// Trigger event
+				// if (outerScope._parent_emitter) {
+				// 	outerScope._parent_emitter.emit('destroyBubble', this);
+				// }
+			});
 		}
 	};
 })();

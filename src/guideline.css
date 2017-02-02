@@ -1,0 +1,320 @@
+/*GitHub proxy*/
+
+div.gl-proxy-disclaimer {
+  background-color: red;
+  color: #fff;
+  padding: 5px;
+  text-align: center;
+  font-weight: bold;
+}
+
+div.gl-proxy-disclaimer a,
+div.gl-proxy-disclaimer a:visited,
+div.gl-proxy-disclaimer a:link {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/*Guideline Bubble*/
+
+.gl-overlay {
+  color: white;
+  text-align:center;
+    position: relative;
+    margin-top: 10%;
+    position: fixed;
+    width: 100%;
+}
+.gl-overlay h1 {
+  font-size: 3em;
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+.gl-overlay p {
+  margin-bottom: 30px;
+  font-size: 20px;
+}
+.gl-overlay .btn.btn-alpha-blue.btn-large {
+  padding: 5px 46px;
+  margin-bottom: 13px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.gl-overlay a, .gl-overlay a:hover, .gl-overlay a:visited {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.gl-bubble {
+    border-radius: 5px;
+    background-color: rgba(35,35,35,0.9);
+    padding: 10px;
+    box-shadow: 0 0 9px 2px rgba(35,35,35,0.5);
+    color: white;
+     max-width: 300px;
+}
+
+.gl-bubble .content {
+  padding: 10px;
+}
+
+.gl-bubble .gl-close,
+.gl-bubble .gl-close:visited,
+.gl-bubble .gl-close:active {
+  position: absolute;
+    right: 8px;
+    top: 4px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #8c6203;
+    background-color: transparent;
+    border: none;
+}
+.gl-bubble .gl-close:hover {
+  text-decoration: none;
+  color: #d09001;
+}
+
+.gl-bubble h2 {
+    font-size: 20px;
+    padding: 0;
+    margin: 0;
+    line-height: 20px;
+    font-weight: bold;
+}
+
+.gl-bubble h2 + div {
+  margin-top: 10px;
+}
+
+.gl-bubble .btn.btn-alpha-blue {
+  background: #BBB;
+  margin-top: 17px;
+}
+.gl-bubble .btn.btn-alpha-blue:hover {
+  background: #999;
+}
+
+.gl-bubble .progress-bar {
+    height: 2px;
+    background-color: #c0c0c0;
+}
+
+/*Arrow*/
+.gl-bubble .arrow,
+.gl-bubble .arrow:after {
+    position: absolute;
+    display: block;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+}
+
+.gl-bubble .arrow {
+    border-width: 11px;
+}
+
+.gl-bubble .arrow:after {
+    border-width: 10px;
+    content: "";
+}
+
+/*Top*/
+
+.gl-bubble.top {
+    margin-top: -15px;
+}
+
+.gl-bubble.top .arrow {
+    bottom: -11px;
+    left: 50%;
+    margin-left: -11px;
+    border-top-color: rgba(35,35,35,0.9);
+    border-bottom-width: 0;
+}
+
+.gl-bubble.top .arrow:after {
+    bottom: 1px;
+    margin-left: -10px;
+    border-top-color: rgba(35,35,35,-0.1);
+    border-bottom-width: 0;
+}
+
+/*Right*/
+
+.gl-bubble.right {
+    margin-left: 15px;
+}
+
+.gl-bubble.right .arrow {
+    top: 50%;
+    left: -11px;
+    margin-top: -11px;
+    border-right-color: rgba(35,35,35,0.9);;
+    border-left-width: 0;
+}
+
+.gl-bubble.right .arrow:after {
+    bottom: -10px;
+    left: 1px;
+    border-right-color: rgba(35,35,35,0.9);;
+    border-left-width: 0;
+}
+
+/*Bottom*/
+
+.gl-bubble.bottom {
+    margin-top: 15px;
+}
+
+.gl-bubble.bottom .arrow {
+    top: -11px;
+    left: 50%;
+    margin-left: -11px;
+    border-bottom-color: rgba(35,35,35,0.9);;
+    border-top-width: 0;
+}
+
+.gl-bubble.bottom .arrow:after {
+    top: 1px;
+    margin-left: -10px;
+    border-bottom-color: rgba(35,35,35,0.9);;
+    border-top-width: 0;
+}
+
+/*Left*/
+
+.gl-bubble.left {
+    margin-right: 15px;
+}
+
+.gl-bubble.left .arrow {
+    top: 50%;
+    right: -11px;
+    margin-top: -11px;
+    border-left-color: rgba(35,35,35,0.9);;
+    border-right-width: 0;
+}
+
+.gl-bubble.left .arrow:after {
+    right: 1px;
+    bottom: -10px;
+    border-left-color: rgba(35,35,35,0.9);;
+    border-right-width: 0;
+}
+
+.gl-target-click{
+    color: #e66a11;
+    cursor: pointer;
+}
+
+.step-control-container{
+    float: right;
+}
+
+.step-control-container .btn-xs{
+    height: 24px !important;
+    line-height: 27px !important;
+}
+
+.joyride-overlay {
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 2500;
+}
+
+.joyride-hole {
+    border-radius: 4px;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7), 0 0 15px rgba(0, 0, 0, 0.5);
+    position: absolute;
+}
+
+.joyride-hole-all {
+    border-radius: 4px;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7);
+    position: absolute;
+}
+
+.tour-indicator {
+  height: 30px;
+  width: 30px;
+  border-radius: 100%;
+  background-color: #3f94d0;
+  cursor: pointer;
+  /* Animate */
+  -webkit-animation-name: pulse;
+  -webkit-animation-duration: 1.5s;
+  -webkit-animation-iteration-count: infinite;
+  /* -webkit-animation-timing-function: ease-out; */
+  -moz-animation-name: pulse;
+  -moz-animation-duration: 1.5s;
+  -moz-animation-iteration-count: infinite;
+  -moz-animation-timing-function: ease-out;
+  -o-animation-name: pulse;
+  -o-animation-duration: 1.5s;
+  -o-animation-iteration-count: infinite;
+  -o-animation-timing-function: ease-out;
+  /* -webkit-animation-name: pulse; */
+  /* animation-name: pulse; */
+  /* -webkit-animation-duration: 1.5s; */
+  /* animation-duration: 1.5s; */
+  /* -webkit-animation-iteration-count: infinite; */
+  /* animation-iteration-count: infinite; */
+  /* -webkit-animation-timing-function: ease-out; */
+  /* animation-timing-function: ease-out; */
+  position: absolute;
+  }
+
+/* WebKit/Safari and Chrome */
+@-webkit-keyframes pulse {
+  /* line 157, /Users/jakemarsh/Desktop/tour-guide-example/app/styles/main.scss */
+  0% {
+    -webkit-transform: scale(1);
+    transform: scale(1); }
+
+  /* line 162, /Users/jakemarsh/Desktop/tour-guide-example/app/styles/main.scss */
+  80% {
+    -webkit-transform: scale(1.5);
+    transform: scale(1.5); }
+
+  /* line 167, /Users/jakemarsh/Desktop/tour-guide-example/app/styles/main.scss */
+  100% {
+    -webkit-transform: scale(2.5);
+    transform: scale(2.5);
+    opacity: 0; } }
+
+/* Gecko/Firefox */
+
+/* Presto/Opera */
+
+/* Standard */
+@keyframes pulse {
+  /* line 215, /Users/jakemarsh/Desktop/tour-guide-example/app/styles/main.scss */
+  0% {
+    -webkit-transform: scale(0.3);
+            transform: scale(0.3);
+    opacity: 0.7; }
+
+  /* line 220, /Users/jakemarsh/Desktop/tour-guide-example/app/styles/main.scss */
+  80% {
+    -webkit-transform: scale(1.5);
+            transform: scale(1.5);
+    opacity: 0.2; }
+
+  /* line 225, /Users/jakemarsh/Desktop/tour-guide-example/app/styles/main.scss */
+  100% {
+    -webkit-transform: scale(2.5);
+            transform: scale(2.5);
+    opacity: 0; } }
+
+
+@media (max-width: 767px) {
+  .gl-overlay {
+    margin-top: 0px !important;
+  }
+}
